@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 html {
   height: 98%;
 }
@@ -250,3 +251,257 @@ particle {
   top: 0;
   overflow:hidden;
 }
+=======
+html {
+  height: 98%;
+}
+body {
+  background:#2d2825  url("../images/background.jpg") no-repeat center center fixed;
+  background-size: auto 100%;
+  height: 100%;
+  position:relative;
+  font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size:11px;
+  color: #CCC;
+}
+p,ul,li {
+  float:left;
+  margin:0;
+  padding:0;
+}
+img {
+  border:0
+}
+a:link,a:visited {
+  color:#bc8748;
+}
+a:hover {
+  color:#a96a1e;
+}
+input::-webkit-input-placeholder {
+  color: #808080 !important;
+  font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size:11px;
+}
+
+input:-moz-placeholder { /* Firefox 18- */
+  color: #808080 !important;
+  font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size:11px;
+}
+
+input::-moz-placeholder {  /* Firefox 19+ */
+  color: #808080 !important;
+  font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size:11px;
+}
+
+input:-ms-input-placeholder {
+  color: #808080 !important;
+  font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size:11px;
+}
+/*#vibrantLogo {
+   background:url(http://games.vibrant3g.com/images/logo282012.png) no-repeat 0 0;
+   height:65px;
+   width:110px;
+   position:absolute;
+   left:30px;
+   top:0;
+ }*/
+.float_l {
+  float:left
+}
+.float_r {
+  float:right
+}
+.m_l_a {
+  margin-left:70px;
+  display:inline
+}
+.m_l_b {
+  margin-right:5px;
+}
+.m_lf45 {
+  margin:0 45px;
+}
+.f_s10 {
+  font-size:10px;
+  color:#999
+}
+.l_h21 {
+  line-height:35px;
+}
+.p_info {
+  height:26px;
+  font-size:10px;
+  text-align:center
+}
+#content {
+  min-height: 100%;
+  margin-bottom: -40px;
+  position: relative;
+}
+.head {
+  height:56px;
+  margin:0 auto
+}
+.main {
+  background:url("../images/main_bg.png");
+  background-clip: padding-box;
+  border: 50px solid transparent;
+  padding: 0px;
+  border-image: url("../images/main_frame.png") 85 70 repeat;
+  width: 234px;
+  height: auto;
+  margin: 0 auto;
+  overflow:hidden;
+}
+#headerBox {
+  position: absolute;
+  left:50%;
+}
+#header {
+  background:url("../images/main_dragon.png") no-repeat 0 0;
+  position: relative;
+  left:-50%;
+  top:-60px;
+  height:93px;
+  width:360px;
+}
+#imageBox {
+  position: absolute;
+  left:50%;
+}
+#image {
+  background:url("../images/logo.png") no-repeat 0 0;
+  position: relative;
+  left:-50%;
+  top:25px;
+  height:160px;
+  width:213px;
+}
+#serverOficialRow td {
+  padding-bottom: 13px;
+}
+.formbox {
+  width: auto;
+  height: auto;
+  margin-top: 125px;
+}
+.formbox input:not([type]), input[type="text"], input[type="password"]  {
+  padding: 1px 8px
+}
+.formbox td {
+  text-align: center;
+  padding: 3px 3px
+}
+.formbox .input_s {
+  width: 80%;
+  border: 3px solid #5d5245;
+  
+  background: #303031;
+  height: 22px;
+  margin: 0 auto;
+  color: #FFC;
+}
+#codigo_label {
+  padding-top: 8px;
+  vertical-align: top;
+}
+#captcha {
+  width: 35px;
+  float:left;
+  margin-left: 50px;
+  margin-right: 10px;
+  height: 20px;
+  text-align: center;
+}
+#img {
+
+}
+#newCaptchaImg {
+  float:left;
+  padding-top:2px;
+  padding-left:3px;
+}
+
+#refreshButton {
+  background:url("../images/refresh.png") no-repeat 0 0;
+  width:23px;
+  height:21px;
+  cursor:pointer;
+}
+.formbox .agree {
+  font-size:11px;
+  color:#fff
+}
+.formbox .agree a {
+  color:#FF0;
+  font-weight:bolder
+}
+#termosDeUso {
+  float: right;
+  padding-top: 2px;
+}
+.btn_playnow {
+  text-align:center
+}
+.btn_playnow #register_button {
+  background:url("../images/joguegratis.png") no-repeat;
+  height:50px;
+  width:226px;
+  cursor:pointer;
+  border:0;
+  margin:0 auto;
+  background-position: 0 -50px;
+}
+.btn_playnow #register_button:hover {
+  background-position: 0 -100px;
+}
+#baixeOJogo { }
+#posContent {
+  height:50px;
+}
+.foot {
+  position:relative;
+  background:#080808;
+  border-top:1px solid #0B0B09;
+  width:100%;
+  height:40px;
+  line-height:40px;
+  text-align:center;
+  color:#666;
+  font-size:11px;
+}
+.normal {
+  color:#666;
+}
+.right {
+  color:#0C3
+}
+.error {
+  color:#F00;
+  display:none;
+}
+
+.locked
+{
+	color: gray !important;
+	border-color: gray !important;
+	pointer-events: none;
+}
+
+
+#userErrors, #emailErrors, #passwordErrors, #confirmPasswordErrors, #checkPolicyErrors, #captchaErrors {
+  height:20;
+  display:none;
+}
+particle {
+  background-size: 100% 100%;
+  position:absolute;
+  left:0;
+  top: 0;
+  overflow:hidden;
+}
+>>>>>>> 1695ed2bf62b26da8258d5b399e7b009bed0bdf1
