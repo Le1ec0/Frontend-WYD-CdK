@@ -1,0 +1,31 @@
+# Catalogo de revisao; nao e carregado pelo servidor.
+# Fonte dos IDs: Tools/Reference759/ClienteComGuilds759/ItemList.csv
+# Campos: category,item_index,name,suggested_price,suggested_stock,decision,notes
+costume,4151,Traje_Valquiria_30dias,,,review,Item existente na ItemList; confirmar duracao visual
+costume,4152,Traje_Esqueleto_30dias,,,review,Item existente na ItemList; confirmar duracao visual
+costume,4153,Traje_Esqueleto_30dias,,,review,Item existente na ItemList; confirmar variante
+costume,4154,Traje_Esqueleto_30dias,,,review,Item existente na ItemList; confirmar variante
+costume,4155,Traje_H_Kalintz_30dias,,,review,Item existente na ItemList
+costume,4156,Traje_M_Kalintz_30dias,,,review,Item existente na ItemList
+costume,4157,Traje_Bruxa_30dias,,,review,Item existente na ItemList
+costume,4158,Traje_Draco_30dias,,,review,Item existente na ItemList
+costume,4161,Traje_Natalino_Roxo,,,review,Item existente na ItemList
+costume,4162,Traje_Natalino_Azul,,,review,Item existente na ItemList
+costume,4163,Traje_Branco,,,review,Item existente na ItemList
+costume,4164,Traje_Negro,,,review,Item existente na ItemList
+costume,4189,Traje_Torcida_Brasil,,,review,Item existente na ItemList
+consumable,1739,Chocolate_do_Amor,10,120,review,Preco provisoriamente alinhado a regra do projeto
+consumable,4145,Coração_Doce,10,120,review,Preco provisoriamente alinhado a regra do projeto
+consumable,599,Bolsa_Perfumada,,,review,Confirmar se sera consumivel ou apenas drop
+ancient_material,2441,Diamante,,,review,Joia reconhecida pelo CombineItem para Ancient
+ancient_material,2442,Esmeralda,,,review,Joia reconhecida pelo CombineItem para Ancient
+ancient_material,2443,Coral,,,review,Joia reconhecida pelo CombineItem para Ancient
+ancient_material,2444,Garnet,,,review,Joia reconhecida pelo CombineItem para Ancient
+equipment_jewel,3386,Gema_de_Diamante,,,optional,Vol 180; troca variante/grau e regrava o codigo de gema; testar em Ancient antes de vender
+equipment_jewel,3387,Gema_de_Esmeralda,,,optional,Vol 181; troca variante/grau e regrava o codigo de gema; testar em Ancient antes de vender
+equipment_jewel,3388,Gema_de_Coral,,,optional,Vol 182; troca variante/grau e regrava o codigo de gema; testar em Ancient antes de vender
+equipment_jewel,3389,Gema_de_Garnet,,,optional,Vol 183; troca variante/grau e regrava o codigo de gema; testar em Ancient antes de vender
+utility,700,Gema_Estelar,,,review,Vol 12; salva a posicao do personagem para retorno/warp
+excluded,3394,Barra_Donate_100,,,excluded,Nao colocar no Donate Shop: gera moeda e criaria ciclo de compra
+excluded,3395,Barra_Donate_1000,,,excluded,Nao colocar no Donate Shop: gera moeda e criaria ciclo de compra
+excluded,3396,Barra_Donate_5000,,,excluded,Nao colocar no Donate Shop: gera moeda e criaria ciclo de compra

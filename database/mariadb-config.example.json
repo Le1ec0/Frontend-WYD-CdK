@@ -1,0 +1,9 @@
+{
+  "provider": "MySqlConnector",
+  "host": "127.0.0.1",
+  "port": 3306,
+  "database": "CHANGE_ME",
+  "username": "CHANGE_ME",
+  "password": "SET_OUTSIDE_REPOSITORY",
+  "sslMode": "Preferred"
+}

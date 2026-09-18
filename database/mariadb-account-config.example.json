@@ -1,0 +1,9 @@
+{
+  "provider": "MySqlConnector",
+  "host": "127.0.0.1",
+  "port": 3306,
+  "database": "wyd_cdk",
+  "username": "wyd_server",
+  "password": "PREENCHER_FORA_DO_REPOSITORIO",
+  "sslMode": "Preferred"
+}
