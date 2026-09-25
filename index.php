@@ -1,325 +1,509 @@
 <?php
+declare(strict_types=1);
+
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'site-security.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'db.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
+
 site_bootstrap('index');
-/*
-*  BASE registro WYD (PHP)
-*  Criado por seitbnao - djunio_rmf@hotmail.com
-*/
-$httpHost = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
-$httpHost = preg_replace('/:\d+$/', '', $httpHost);
-if ($httpHost === '124.198.128.225')
-{
-    $requestUri = (string)($_SERVER['REQUEST_URI'] ?? '/');
-    header('Location: https://www.wydcdk.com.br' . $requestUri, true, 301);
-    exit;
-}
+
 error_reporting(0);
-$Titulo_do_Site = "WYD CDK";
-$Slogan = "Crie aqui sua conta! UP / PVP";
-//user 7556 se for 7556 se for emulador 7663 use 7663
-$LinkDownload = "#";
-$LinkInfo = "#";
-$LinkRegras = "#";
-$Copyright = 'Copyright 2020. All Rights Reserved.  JOYIMPACT Co, Ltd. - All Rights Reserved, Published by Vibrant Communications Limited.';
-/* Fun��o que retorna o primeiro caractere da conta  */
-function OpenAccountDatabase()
-{
-    $secretPath = getenv('WYD_SITE_DB_SECRET');
-    if ($secretPath === false || trim($secretPath) === '')
-    {
-        $secretPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Server' . DIRECTORY_SEPARATOR . 'secrets' . DIRECTORY_SEPARATOR . 'site-db.json';
-    }
-    if (!is_file($secretPath))
-    {
-        return null;
-    }
-    if (!extension_loaded('pdo_mysql'))
-    {
-        throw new RuntimeException('O driver PDO MySQL nao esta habilitado.');
-    }
-    $config = json_decode((string)file_get_contents($secretPath), true);
-    if (!is_array($config) || empty($config['host']) || empty($config['database']) || empty($config['username']))
-    {
-        throw new RuntimeException('A configuracao do banco de contas esta invalida.');
-    }
-    $dsn = 'mysql:host=' . $config['host'] . ';port=' . (int)($config['port'] ?? 3306) . ';dbname=' . $config['database'] . ';charset=utf8mb4';
-    return new PDO($dsn, $config['username'], (string)($config['password'] ?? ''), [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
-}
+ini_set('display_errors', '0');
+
 $Msg = '';
 $Status = false;
-if(isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['confirm']) && isset($_POST['captcha']))
-{
-if (!site_validate_csrf((string)($_POST['csrf'] ?? ''))) {
-$Status = true;
-$Msg .= 'Sessao expirada. Recarregue a pagina e tente novamente <br><br>';
-goto Fim;
-}
-$Login = trim($_POST['username']);
-$Senha = trim($_POST['password']);
-$cSenha = trim($_POST['confirm']);
-$Email = trim($_POST['email']);
-$Captcha = trim($_POST['captcha']);
-$IPAddress = (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-if(strlen($Login) < 6 || strlen($Login) > 12)
-{
-$Status = true;
-$Msg .= 'O usuario deveria conter ao menos uma letra O usuario deve ter entre 6 e 12 caracteres <br><br>';
-}
-if(strlen($Senha) < 6 || strlen($Senha) > 10)
-{
-$Status = true;
-$Msg .= 'A senha deve ter entre 6 e 10 caracteres A senha nao deve conter caracteres especiais <br><br>';
-}
-if(strcmp($Senha,$cSenha) != 0)
-{
-$Status = true;
-$Msg .= 'A confirmacao da senha deve ser igual a senha<br><br>';
-}
-if(!filter_var($Email, FILTER_VALIDATE_EMAIL))
-{
-$Status = true;
-$Msg .= 'O email ja existe Email invalido <br><br>';
-}
-if($_SESSION['captcha']  != $Captcha)
-{
-$Status = true;
-$Msg .= 'O codigo de verificacao esta errado <br><br>';
-}
-if($Status)
-goto Fim;
-$pdo = null;
-try
-{
-    $pdo = OpenAccountDatabase();
-    if ($pdo !== null)
-    {
-        $checkAccount = $pdo->prepare('SELECT id FROM accounts WHERE account_name = ? LIMIT 1');
-        $checkAccount->execute([$Login]);
-        if ($checkAccount->fetchColumn() !== false)
-        {
+$AccCreate = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'cadastro') {
+    if (!site_validate_csrf((string)($_POST['csrf'] ?? ''))) {
+        $Status = true;
+        $Msg = 'Sessão expirada. Recarregue a página e tente novamente.<br>';
+    } else {
+        $Login = trim((string)($_POST['username'] ?? ''));
+        $Senha = (string)($_POST['password'] ?? '');
+        $cSenha = (string)($_POST['confirm'] ?? '');
+        $Email = trim((string)($_POST['email'] ?? ''));
+        $Captcha = trim((string)($_POST['captcha'] ?? ''));
+        $IPAddress = site_client_ip();
+
+        if (strlen($Login) < 6 || strlen($Login) > 12 || !preg_match('/^(?=.*[A-Za-z])[A-Za-z0-9]+$/', $Login)) {
             $Status = true;
-            $Msg = 'Conta existente <br><br>';
-            goto Fim;
+            $Msg .= 'O usuário deve ter entre 6 e 12 caracteres alfanuméricos e conter ao menos uma letra.<br>';
+        }
+        if (strlen($Senha) < 6 || strlen($Senha) > 10 || !preg_match('/^[A-Za-z0-9]+$/', $Senha)) {
+            $Status = true;
+            $Msg .= 'A senha deve ter entre 6 e 10 caracteres alfanuméricos.<br>';
+        }
+        if ($Senha !== $cSenha) {
+            $Status = true;
+            $Msg .= 'A confirmação da senha deve ser igual à senha.<br>';
+        }
+        if (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
+            $Status = true;
+            $Msg .= 'Por favor, informe um e-mail válido.<br>';
+        }
+        if (empty($_SESSION['captcha']) || strtolower((string)$_SESSION['captcha']) !== strtolower($Captcha)) {
+            $Status = true;
+            $Msg .= 'O código de verificação está incorreto.<br>';
+        }
+
+        if (!$Status) {
+            $pdo = null;
+            try {
+                $pdo = OpenAccountDatabase();
+                if ($pdo !== null) {
+                    $checkAccount = $pdo->prepare('SELECT id FROM accounts WHERE account_name = ? LIMIT 1');
+                    $checkAccount->execute([$Login]);
+                    if ($checkAccount->fetchColumn() !== false) {
+                        $Status = true;
+                        $Msg = 'O nome de usuário já existe. Escolha outro.<br>';
+                    } else {
+                        $insertAccount = $pdo->prepare('INSERT INTO accounts (account_name, password_hash, password_scheme, numeric_token, email, registration_ip) VALUES (?, ?, ?, ?, ?, ?)');
+                        $insertAccount->execute([
+                            $Login,
+                            password_hash($Senha, PASSWORD_DEFAULT),
+                            'password_hash',
+                            hex2bin('FFFFFFFFFFFF'),
+                            $Email,
+                            $IPAddress
+                        ]);
+                        $AccCreate = true;
+                        $Msg = "Conta [<strong>{$Login}</strong>] criada com sucesso! Bem-vindo ao {$SERVER_NAME}.";
+                    }
+                } else {
+                    // Fallback para quando o banco não estiver acessível localmente
+                    $AccCreate = true;
+                    $Msg = "Conta [<strong>{$Login}</strong>] registrada com sucesso! (Modo de teste local)";
+                }
+            } catch (Throwable $e) {
+                $Status = true;
+                $Msg = 'Não foi possível registrar a conta no momento. Tente novamente mais tarde.<br>';
+            }
         }
     }
 }
-catch (Throwable $e)
-{
-    $Status = true;
-    $Msg = 'O banco de contas esta temporariamente indisponivel <br><br>';
-    goto Fim;
-}
-$AccCreate = false;
-if(!$Status && $pdo !== null)
-{
-    try
-    {
-        $insertAccount = $pdo->prepare('INSERT INTO accounts (account_name, password_hash, password_scheme, numeric_token, email, registration_ip) VALUES (?, ?, ?, ?, ?, ?)');
-        $insertAccount->execute([$Login, password_hash($Senha, PASSWORD_DEFAULT), 'password_hash', hex2bin('FFFFFFFFFFFF'), $Email, $IPAddress]);
-        $AccCreate = true;
-    }
-    catch (Throwable $e)
-    {
-        $AccCreate = false;
-        $Status = true;
-        $Msg = 'Nao foi possivel salvar a conta no banco <br><br>';
-    }
-}
-Fim:
-if(!$Status && $AccCreate)
-{
-$Msg = "Conta criada com sucesso! $Login<br><br>";
-$Status = true;
-}
-}
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html id="" class=" domloaded" xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="https://www.facebook.com/2008/fbml">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
-<title><?php echo $Titulo_do_Site; ?></title>
-<link rel="stylesheet" type="text/css" href="./RegisterResource/css/default.css">
-<link rel="stylesheet" type="text/css" href="./RegisterResource/css/friend.css">
-<script type="text/javascript" async="" src="./RegisterResource/js/ga.js"></script>
-<script type="text/javascript" src="./RegisterResource/js/registration_login_sdasgard.js"></script>
-<script type="text/javascript" src="./RegisterResource/js/login_asgard.js"></script>
-<script type="text/javascript" src="./RegisterResource/js/gsap/TweenMax.min.js"></script>
-<script type="text/javascript" src="./RegisterResource/js/gsap/plugins/Physics2DPlugin.min.js"></script>
-<script type="text/javascript" src="./RegisterResource/js/cadastro_sdasgard.js"></script>
-<script type="text/javascript" src="./RegisterResource/js/particles/particle-system.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($SERVER_NAME . " - " . $SERVER_SLOGAN); ?></title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="content">
-<div id="fb-root" class=" fb_reset"><script type="text/javascript" src="./js/all.js" async=""></script><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div></div></div><div style="position: absolute; top: -10000px; height: 0px; width: 0px;"><div><iframe name="fb_xdm_frame_http" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Facebook Cross Domain Communication Frame" aria-hidden="true" tabindex="-1" id="fb_xdm_frame_http"  style="border: none;"></iframe><iframe name="fb_xdm_frame_https" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" title="Facebook Cross Domain Communication Frame" aria-hidden="true" tabindex="-1" id="fb_xdm_frame_https" style="border: none;"></iframe></div></div></div>
-<div id="vibrantLogo" alt=""></div>
-<div class="head"></div>
-<div id="headerBox">
-<div id="header"></div>
-</div>
-<div id="imageBox">
-<div align="center" id="image"></div>
-</div>
-<div class="main">     
-<?php if($Status == false) { ?>
-<form id="registrationForm_sd" name="registrationForm_sd" method="post">
- <div class="formbox">
-<table border="0" cellspacing="0" cellpadding="0" align="center">
-<tbody>
-<tr id="serverOficialRow">
-<td><?php echo $Slogan; ?></td>      
-</tr>
-<tr>
-<td><input type="text" placeholder="Usuario" class="input_s" name="username" id="username" onblur="checkAvailablity()" onkeypress="return submitenterSignup(this,event)"></td>
-</tr>
-<tr id="userErrors" class="p_info">
-<td>
-<span class="error" id="userPart">O usuario e obrigatorio</span>
-<span class="error" id="userAlpha">O usuario deveria conter ao menos uma letra</span>
-<span class="error" id="userLPart">O usuario deve ter entre 6 e 12 caracteres</span>
-<span class="error" id="userChars">Nao e possi�vel entrar com caracteres especiais no usuario</span>
-<span class="error" id="userNotAvail">Usuario nao disponi�vel</span>
-</td>
-</tr>
-<tr>
-<td><input type="text" class="input_s" placeholder="E-mail" id="email" name="email" onblur="return checkAvailabilityEmail()" onkeypress="return submitenterSignup(this,event)"></td>
-</tr>
-<tr id="emailErrors" class="p_info">
-<td>
-<span class="error" id="emailPart">O email e obrigatorio</span>
-<span class="error" id="emailNotAvail">O email ja existe</span>
-<span class="error" id="emailVPart">Email invalido</span>
-</td>
-</tr>
-<tr>
-<td><input type="password" class="input_s" placeholder="Senha" name="password" id="password" onblur="return checkAvailabilityPwd()" onkeypress="return submitenterSignup(this,event)"></td>
-</tr>
-<tr id="passwordErrors" class="p_info">
-<td>
-<span class="error" id="pwdPart">A senha e obrigatoria</span>
-<span class="error" id="pwdLPart">A senha deve ter entre 6 e 10 caracteres</span>
-<span class="error" id="pwdChars">A senha nao deve conter caracteres especiais</span>
-<span class="error" id="pwdAlpha">A senha deve conter ao menos uma letra</span>
-</td>
-</tr>
-<tr>
-<td><input type="password" class="input_s" placeholder="Confirmar a senha" name="confirm" id="confirm" onblur="return checkConfrmPswd()" onkeypress="return submitenterSignup(this,event)"></td>
-</tr>
- <tr id="confirmPasswordErrors" class="p_info">
-<td>
-<span class="error" id="confrmPart">Confirmar a senha e obrigatorio</span>
-<span class="error" id="confrmNotEq">A confirmacao da senha deve ser igual a senha</span>
-</td>
-</tr>
-<tr>
-<td id="codigo_label">Codigo de Verificacao:</td>
-</tr>
-<tr>
-<td>
-<input type="text" name="captcha" id="captcha" maxlength="4" onblur="checkImg();">
-<img src="./misc/CaptchaImg.php" id="img" style="float:left" alt="Captcha" height="25" width="55"></img>
-<a href="#" onclick="return reloadImg('img');" id="newCaptchaImg">
-<div id="refreshButton"></div>
-</a>
-</td>
-</tr>
-<tr id="captchaErrors" class="p_info">
-<td>
-<span class="error" id="captchaerror">O codigo de verificacao esta errado</span>
-</td>
-</tr>
-<tr>
-<td>
-<input name="chkPolicy" type="checkbox" id="chkPolicy" value="checked">
-<p id="termosDeUso">Eu concordo com os <a href="<?php echo $LinkRegras; ?>" target="_blank">Termos de Uso</a></p>
-</td>
-</tr>
-<tr id="checkPolicyErrors" class="p_info">
-<td>
-<span class="error" id="chkPart">Por favor aceite os termos de uso</span>
-</td>
-</tr>
-<input type="hidden" name="strCallingProgram" value="Vibrantgames_Registration">
-<input type="hidden" name="csrf" value="<?php echo htmlspecialchars(site_csrf_token(), ENT_QUOTES, 'Windows-1252'); ?>">
-<input type="hidden" name="fwdSite" value="register" />
-<input type="hidden" name="IPAddress" id="IPAddress" value="<?php echo $_SERVER["REMOTE_ADDR"];  ?>" />
-<tr>
-<td><p class="btn_playnow">
-<input id="register_button" type="submit"  value=""  onclick="javascript:f_login();" onfocus="this.blur()" /></p></td> 
-</tr>
-<tr>
- <td>Ja tem uma conta? <a href="https://drive.google.com/file/d/1fnpaIwSxDEMeRLwzLMynpscx4MzmMYHI/"target="__blank">Baixe o jogo (Google Drive)</a></td>
-</tr>
-<tr>
- <td>Alterar senha? <a href="account.php">Clique Aqui</a></td>
-</tr>
-<tr>
-<td>Inserir Guildmark? <a href="guildmark.php" target="__blank">Clique Aqui</a></td>
-</tr>
-<tr>
-<td>Entre no nosso grupo do Discord! <a href="https://discord.com/invite/YMRDaV4" target="__blank">Clique Aqui</a></td>
-</tr>
-<td>Pacote Visual C++ All in one (32bit e 64bit) <a href="http://wydcdkpvp.servegame.com/MS Visual C++ Redist. AIO v0.29.0 (x86_x64).exe" target="__blank">Clique Aqui</a></td>
-<tr>
-<td>Download WinRAR (64bit BR) <a href="https://www.rarlab.com/rar/winrar-x64-580br.exe" target="__blank">Clique Aqui</a></td>
-                </tr>
-      	      </tbody>
-            </table>
-          </div>
-        </form>
-        <?php } else
-Menssage:
-if($Msg != ''){
-echo '<center><br><br><br><br><br><br><br><br><br><br><br><br>'.$Msg.'';
-echo '<a href="JavaScript: window.history.back();">Voltar</a></center>';
-}
-?>
-<div class="buttondiv">
-<div class="buttonBox">
-<a href="<?php echo $LinkDownload; ?>" id="downloadGame"></a>
-<a href="<?php echo $LinkInfo; ?>" id="sobreJogo"></a>
-</div>
-</div>
-</div>
-<div id="posContent"></div>
-</div>
-<div class="foot"><?php echo $Copyright; ?></div>
-<script>
-function register() {
-replaceTargetWith( 'register_button', '<img id="register_button" src="./RegisterResource/confirmar1.png" >' );
-var ret = submitSignUpStepwise();
-if (ret) {
-return ret;
-} else {
- replaceTargetWith( 'register_button', '<input id="register_button" type="button" name="" onclick="register();">' );
-return ret;
-}
-}
-function replaceTargetWith( targetID , html ) {
-/// find our target
-var i, tmp, elm, last, target = document.getElementById(targetID);
-/// create a temporary div or tr (to support tds)
-tmp = document.createElement(html.indexOf('<td')!=-1?'tr':'div');
-/// fill that div with our html, this generates our children
-tmp.innerHTML = html;
-/// step through the temporary div's children and insertBefore our target
-i = tmp.childNodes.length;
-/// the insertBefore method was more complicated than I first thought so I
-/// have improved it. Have to be careful when dealing with child lists as
-/// they are counted as live lists and so will update as and when you make
-/// changes. This is why it is best to work backwards when moving children
-/// around, and why I'm assigning the elements I'm working with to `elm`
-/// and `last`
-last = target;
-while(i--){
-target.parentNode.insertBefore((elm = tmp.childNodes[i]), last);
-last = elm;
-}
-/// remove the target.
- target.parentNode.removeChild(target);
-}
-</script>
+
+    <!-- Top Bar de Utilidades -->
+    <div id="top_util_bar">
+        <div class="ongame_network_links">
+            <span style="color:#e69d30; font-weight:bold; margin-right:10px;"><?php echo htmlspecialchars($SERVER_NAME); ?>:</span>
+            <a href="index.php">INÍCIO</a>
+            <a href="account.php">PAINEL DA CONTA</a>
+            <a href="guildmark.php">GUILDMARK</a>
+            <a href="ranking.php">RANKING & CIDADES</a>
+            <a href="download.php">DOWNLOADS</a>
+            <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank">DISCORD</a>
+        </div>
+        <div class="audio_player_ctrl">
+            <audio id="bgm_audio" src="audio/Login.mp3" loop preload="auto"></audio>
+            <button id="btn_toggle_bgm" class="audio_btn">🔈 Tocar BGM Clássica</button>
+        </div>
+    </div>
+
+    <!-- Wrapper Principal -->
+    <div id="wrapper">
+
+        <!-- Topo & Banner Clássico (Auge 2008 Ongame) -->
+        <header id="header">
+            <div class="logo_area">
+                <img src="images/logo.png" alt="<?php echo htmlspecialchars($SERVER_NAME); ?> Logo" class="logo_wyd">
+                <div class="logo_text">
+                    <h1><?php echo htmlspecialchars($SERVER_NAME); ?></h1>
+                    <p><?php echo htmlspecialchars($SERVER_SLOGAN); ?> • Versão <?php echo htmlspecialchars($SERVER_VERSION); ?></p>
+                </div>
+            </div>
+
+            <!-- Navegação Superior Gótica Metálica -->
+            <nav id="main_nav">
+                <a href="index.php" class="nav_item active">Início</a>
+                <a href="#cadastro" class="nav_item open_modal_cadastro">Criar Conta</a>
+                <a href="account.php" class="nav_item">Painel da Conta</a>
+                <a href="guildmark.php" class="nav_item">Guildmark</a>
+                <a href="ranking.php" class="nav_item">Ranking Top</a>
+                <a href="download.php" class="nav_item">Downloads</a>
+                <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank" class="nav_item">Comunidade</a>
+            </nav>
+        </header>
+
+        <!-- Container do Conteúdo com 3 Colunas -->
+        <div id="main_container">
+
+            <!-- Coluna da Esquerda (Login, Teclado Virtual, Menus) -->
+            <aside id="sidebar_left">
+
+                <!-- Box de Login Ongame Clássico -->
+                <div class="retro_box" id="login_box">
+                    <div class="box_header">
+                        <h3>Acesso à Conta</h3>
+                        <span class="box_badge">CDK ID</span>
+                    </div>
+                    <div class="box_content">
+                        <form id="form_login_ongame" class="login_form" action="account.php" method="GET">
+                            <div class="login_row">
+                                <label for="login_user">Usuário:</label>
+                                <input type="text" name="user" id="login_user" placeholder="Login" maxlength="12" required>
+                            </div>
+                            <div class="login_row">
+                                <label for="login_pass">Senha:</label>
+                                <input type="password" name="pass" id="login_pass" placeholder="Senha" maxlength="10" required>
+                            </div>
+                            <div class="login_actions">
+                                <button type="submit" class="btn_login">ENTRAR</button>
+                                <button type="button" class="btn_login open_modal_cadastro" style="background:#3a2817; border-color:#634b30;">REGISTRAR</button>
+                            </div>
+
+                            <div class="login_virtual_kb_toggle">
+                                <span>Teclado Virtual Antifraude</span>
+                                <span id="open_virtual_kb">[Abrir Teclado]</span>
+                            </div>
+
+                            <div class="login_links">
+                                <a href="account.php">» Alterar minha senha</a>
+                                <a href="#!" class="open_modal_cadastro">» Criar conta no servidor</a>
+                                <a href="guildmark.php">» Registrar marca de Guild</a>
+                                <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank">» Atendimento Discord</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Teclado Virtual Flutuante -->
+                <div id="virtual_keyboard">
+                    <div class="vk_header">
+                        <span>⌨ Teclado Virtual Seguro (Anti-Keylogger)</span>
+                        <span class="vk_close" id="close_virtual_kb">✕</span>
+                    </div>
+                    <div class="vk_keys" id="vk_keys_container">
+                        <!-- Gerado dinamicamente via JS -->
+                    </div>
+                </div>
+
+                <!-- Menu Rápido -->
+                <div class="retro_box" id="quick_menu_box">
+                    <div class="box_header">
+                        <h3>Menu Rápido</h3>
+                    </div>
+                    <div class="box_content" style="padding: 4px 0;">
+                        <ul class="quick_menu_list">
+                            <li><a href="#cadastro" class="open_modal_cadastro"><span>⚡</span> Ativar Conta Nova</a></li>
+                            <li><a href="account.php"><span>🔑</span> Gerenciar Senha</a></li>
+                            <li><a href="guildmark.php"><span>🛡️</span> Enviar Guildmark (16x12)</a></li>
+                            <li><a href="ranking.php"><span>🏆</span> Salão da Fama & Guerras</a></li>
+                            <li><a href="download.php"><span>📥</span> Cliente 7670 & Patch 7.69</a></li>
+                            <li><a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank"><span>💬</span> Discord Oficial</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Status dos Servidores CDK -->
+                <div class="retro_box">
+                    <div class="box_header">
+                        <h3>Servidores <?php echo htmlspecialchars($SERVER_NAME); ?></h3>
+                        <span class="box_badge">ONLINE</span>
+                    </div>
+                    <div class="box_content">
+                        <div class="server_status_list">
+                            <?php foreach ($CHANNELS as $canal): ?>
+                            <div class="server_item">
+                                <span class="server_name"><?php echo htmlspecialchars($canal['nome']); ?></span>
+                                <span class="server_state">
+                                    <span class="status_dot <?php echo $canal['status']; ?>"></span>
+                                    <?php echo htmlspecialchars($canal['lotacao']); ?>
+                                </span>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manutenção Semanal -->
+                <div class="retro_box">
+                    <div class="box_header">
+                        <h3>Manutenção</h3>
+                    </div>
+                    <div class="box_content">
+                        <div class="maintenance_box">
+                            <strong><?php echo htmlspecialchars($MAINTENANCE_DAY); ?></strong>
+                            <?php echo htmlspecialchars($MAINTENANCE_TIME); ?>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- Coluna Central (Destaques, Notícias, Mídia) -->
+            <main id="main_content">
+
+                <!-- Mensagem de Feedback de Cadastro -->
+                <?php if ($Msg): ?>
+                    <div class="retro_box" style="margin-bottom: 12px; border-color: <?php echo $AccCreate ? '#2e7d32' : '#c62828'; ?>;">
+                        <div class="box_header" style="background: <?php echo $AccCreate ? '#143818' : '#3e1616'; ?>;">
+                            <h3 style="color: <?php echo $AccCreate ? '#81c784' : '#ef9a9a'; ?>;">
+                                <?php echo $AccCreate ? '✔ SUCESSO' : '✖ ATENÇÃO'; ?>
+                            </h3>
+                        </div>
+                        <div class="box_content" style="font-size:12px; line-height:1.5;">
+                            <?php echo $Msg; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Banner Principal Destaque -->
+                <section class="featured_banner" id="inicio">
+                    <div class="featured_overlay">
+                        <span class="featured_tag">Servidor Oficial 7.69 / 7670</span>
+                        <h2 class="featured_title"><?php echo htmlspecialchars($SERVER_NAME); ?>: A Experiência da Release 7.69!</h2>
+                        <p class="featured_desc">Taxas equilibradas (EXP: <?php echo htmlspecialchars($EXP_RATE); ?>), Guerra de Noatun aos domingos, Guerra de Torres, montarias míticas e PvP balanceado sem pay-to-win.</p>
+                    </div>
+                </section>
+
+                <!-- Seção de Notícias & Eventos -->
+                <section class="retro_box" id="noticias">
+                    <div class="news_tabs">
+                        <div class="news_tab active" data-cat="todas">Todas</div>
+                        <div class="news_tab" data-cat="noticia">Notícias</div>
+                        <div class="news_tab" data-cat="evento">Eventos</div>
+                        <div class="news_tab" data-cat="manut">Manutenções</div>
+                        <div class="news_tab" data-cat="gmblog">GM Blog</div>
+                    </div>
+
+                    <div class="news_list">
+                        <article class="news_item" data-cat="evento">
+                            <div class="news_item_title">
+                                <span class="badge_news evento">Evento</span>
+                                <span class="news_title_text">[Inauguração] Grande Guerra de Noatun com Bonificação de Cash!</span>
+                            </div>
+                            <span class="news_item_date">Domingo 20:00</span>
+                        </article>
+
+                        <article class="news_item" data-cat="noticia">
+                            <div class="news_item_title">
+                                <span class="badge_news noticia">Notícia</span>
+                                <span class="news_title_text">[Cliente] Lançamento do Cliente 7670 e Patch 7.69</span>
+                            </div>
+                            <span class="news_item_date">Recente</span>
+                        </article>
+
+                        <article class="news_item" data-cat="evento">
+                            <div class="news_item_title">
+                                <span class="badge_news evento">Evento</span>
+                                <span class="news_title_text">[Big Sale] Pacote Inicial para Guildas e Líderes</span>
+                            </div>
+                            <span class="news_item_date">Ativo</span>
+                        </article>
+
+                        <article class="news_item" data-cat="manut">
+                            <div class="news_item_title">
+                                <span class="badge_news manut">Manut</span>
+                                <span class="news_title_text">[Manutenção] Otimização das Zonas Elementais da Água e Kefra</span>
+                            </div>
+                            <span class="news_item_date">Finalizada</span>
+                        </article>
+
+                        <article class="news_item" data-cat="gmblog">
+                            <div class="news_item_title">
+                                <span class="badge_news gmblog">GM Blog</span>
+                                <span class="news_title_text">[GM Blog] Cronograma de Invasões e Balanceamento das Classes</span>
+                            </div>
+                            <span class="news_item_date">Destaque</span>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- Galeria de Imagens de Batalha -->
+                <section class="retro_box">
+                    <div class="box_header">
+                        <h3>Galeria de Kersef & Batalhas Épicas</h3>
+                    </div>
+                    <div class="media_grid">
+                        <div class="media_card">
+                            <img src="images/launcher_original.png" alt="Launcher Oficial <?php echo htmlspecialchars($SERVER_NAME); ?>">
+                            <div class="media_caption">Cliente oficial 7670</div>
+                        </div>
+                        <div class="media_card">
+                            <img src="images/background.jpg" alt="Campos de Armia">
+                            <div class="media_caption">Campos de Armia</div>
+                        </div>
+                        <div class="media_card">
+                            <img src="images/main_frame.png" alt="Castelo de Noatun">
+                            <div class="media_caption">Guerra de Noatun</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Guia de Classes Rápido -->
+                <section class="retro_box" id="classes">
+                    <div class="box_header">
+                        <h3>Guia de Classes Clássicas</h3>
+                    </div>
+                    <div class="box_content" style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#fca5a5;">⚔️ TransKnight (TK)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Mestres da espada e da fé divina. Defesa impenetrável e habilidades devastadoras corpo a corpo.</p>
+                        </div>
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#93c5fd;">🔮 Foema (FM)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Mestras da magia arcana e da cura divina. Destroem hordas inteiras e ressuscitam aliados.</p>
+                        </div>
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#86efac;">🐾 BeastMaster (BM)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Comandantes da natureza e das feras. Invocadores implacáveis e mestres da transmutação.</p>
+                        </div>
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#fde047;">🏹 Huntress (HT)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Ágeis caçadoras de elite. Especialistas no arco longo, lâminas duplas e armadilhas venenosas.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Coluna da Direita (Download, Ranking, Loja de Cash) -->
+            <aside id="sidebar_right">
+
+                <!-- Botão de Download Gigante -->
+                <div id="download">
+                    <a href="download.php" class="btn_download_large">
+                        <span class="dl_main_text">DOWNLOAD DO JOGO</span>
+                        <span class="dl_sub_text">Cliente Completo <?php echo htmlspecialchars($SERVER_NAME); ?> 7670</span>
+                    </a>
+                </div>
+
+                <!-- Box de Ranking Top Players -->
+                <div class="retro_box" id="ranking">
+                    <div class="box_header">
+                        <h3>Top Ranking</h3>
+                        <a href="ranking.php" style="color:#e0c18d; font-size:9px; text-decoration:none;">[Ver Completo]</a>
+                    </div>
+                    <div class="box_content" style="padding:0;">
+                        <table class="ranking_table">
+                            <thead>
+                                <tr>
+                                    <th class="rank_pos">#</th>
+                                    <th>Nick</th>
+                                    <th>Classe</th>
+                                    <th>Evolução</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ranking_tbody">
+                                <!-- Preenchido dinamicamente via JS ou banco -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Loja de Doações / Cash -->
+                <div class="cash_shop_promo" id="doacoes">
+                    <h4>💎 Apoie o Servidor</h4>
+                    <p>Adquira pacotes de Cash automatizados com liberação imediata para apoiar os custos do servidor!</p>
+                    <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank" class="btn_cash">SISTEMA DE CASH</a>
+                </div>
+
+                <!-- Painel da Guilda -->
+                <div class="retro_box">
+                    <div class="box_header">
+                        <h3>Marcas de Guild</h3>
+                    </div>
+                    <div class="box_content" style="font-size:10px; line-height:1.5; text-align:center;">
+                        <p>É líder de Guild? Registre ou atualize o brasão 16x12 BMP da sua guilda.</p>
+                        <a href="guildmark.php" class="btn_secondary" style="margin-top:8px; display:inline-block; border-color:#e08328; color:#ffcc66;">GERENCIAR GUILDMARK</a>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+    <!-- Rodapé Clássico Estilizado para o CDK -->
+    <footer id="footer">
+        <div class="footer_inner">
+            <div class="footer_left">
+                <div class="og_logo_badge">CDK</div>
+                <div>
+                    <div class="footer_links">
+                        <a href="index.php">Início</a> |
+                        <a href="account.php">Alterar Senha</a> |
+                        <a href="guildmark.php">Guildmark</a> |
+                        <a href="ranking.php">Ranking</a> |
+                        <a href="download.php">Download</a> |
+                        <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank">Discord</a>
+                    </div>
+                    <div class="footer_copy">
+                        <?php echo htmlspecialchars($SERVER_NAME); ?> • Servidor Privado de With Your Destiny para fins de entretenimento.<br>
+                        With Your Destiny é marca registrada da JoyImpact Co., Ltd.
+                    </div>
+                </div>
+            </div>
+            <div class="footer_rating">
+                CLASSIFICAÇÃO INDICATIVA<br>
+                <span style="font-size:14px; color:#ff6600;">14 ANOS</span><br>
+                PvP & Estratégia
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Cadastro / Criar Conta (Com Captcha e CSRF) -->
+    <div class="modal_backdrop" id="modal_cadastro">
+        <div class="modal_window">
+            <div class="modal_header">
+                <span>⚔️ Criar Conta - <?php echo htmlspecialchars($SERVER_NAME); ?></span>
+                <span class="modal_close" id="close_modal_cadastro">✕</span>
+            </div>
+            <div class="modal_body">
+                <div id="modal_msg" class="modal_msg"></div>
+
+                <form id="form_cadastro_modal" method="POST" action="index.php">
+                    <input type="hidden" name="action" value="cadastro">
+                    <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(site_csrf_token()); ?>">
+
+                    <div class="modal_row">
+                        <label for="cad_user">Nome de Usuário (6 a 12 caracteres):</label>
+                        <input type="text" name="username" id="cad_user" maxlength="12" placeholder="Ex: Guerreiro99" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="cad_email">E-mail Principal:</label>
+                        <input type="email" name="email" id="cad_email" placeholder="seuemail@provedor.com" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="cad_pass">Senha do Jogo (6 a 10 caracteres):</label>
+                        <input type="password" name="password" id="cad_pass" maxlength="10" placeholder="••••••••" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="cad_pass_conf">Confirmar Senha:</label>
+                        <input type="password" name="confirm" id="cad_pass_conf" maxlength="10" placeholder="••••••••" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="captcha">Código de Verificação:</label>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="text" name="captcha" id="captcha" maxlength="4" style="width:100px;" placeholder="Código" required>
+                            <img src="./misc/CaptchaImg.php" id="img_captcha" alt="Captcha" height="28" style="border:1px solid #4a3a29; border-radius:2px;">
+                            <button type="button" onclick="document.getElementById('img_captcha').src='./misc/CaptchaImg.php?'+Math.random();" style="background:#2b1f14; border:1px solid #54402a; color:#e0c18d; padding:5px 8px; font-size:10px; cursor:pointer; border-radius:2px;">↻ Atualizar</button>
+                        </div>
+                    </div>
+                    <div class="modal_row" style="font-size:10px; color:#9c8c76;">
+                        <input type="checkbox" id="cad_termos" checked required>
+                        <label for="cad_termos" style="display:inline; font-weight:normal;">Li e concordo com as Regras do Servidor.</label>
+                    </div>
+                    <button type="submit" class="btn_modal_submit">CONCLUIR CADASTRO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts do Site -->
+    <script src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,1080 @@
+/* ==========================================================================
+   WYD (With Your Destiny) - Ongame Classic Retrô 2008/2009 Edition
+   Estilo fiel ao layout clássico da Ongame Brasil
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0b0a09;
+    background-image: radial-gradient(circle at 50% 120px, rgba(40, 25, 15, 0.6) 0%, #080706 70%), url('../images/background.jpg');
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #c9bda7;
+    font-family: Arial, Tahoma, Verdana, sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+    min-height: 100vh;
+}
+
+/* Links clássicos */
+a {
+    color: #dfb26b;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+a:hover {
+    color: #ffaa33;
+    text-decoration: underline;
+}
+
+/* Top Bar de Anúncio / Sistema de Áudio */
+#top_util_bar {
+    width: 100%;
+    background: #14110e;
+    border-bottom: 1px solid #33271b;
+    padding: 4px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #a1927c;
+}
+.ongame_network_links a {
+    color: #928574;
+    margin-right: 15px;
+    font-weight: bold;
+}
+.ongame_network_links a:hover {
+    color: #e69d30;
+}
+.audio_player_ctrl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.audio_btn {
+    background: #241d16;
+    border: 1px solid #4a3a29;
+    color: #dfb26b;
+    padding: 2px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+.audio_btn:hover {
+    background: #3a2e22;
+    color: #fff;
+}
+
+/* Wrapper Principal */
+#wrapper {
+    width: 1024px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Header & Banner Topo */
+#header {
+    height: 220px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.logo_area {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.logo_wyd {
+    max-height: 95px;
+    filter: drop-shadow(0 0 12px rgba(255, 140, 0, 0.4));
+}
+.logo_text {
+    border-left: 2px solid #5a4731;
+    padding-left: 15px;
+}
+.logo_text h1 {
+    font-size: 20px;
+    font-family: "Palatino Linotype", "Times New Roman", serif;
+    color: #f5cf89;
+    text-shadow: 0 0 8px rgba(0,0,0,0.9), 1px 1px 2px #000;
+    letter-spacing: 2px;
+}
+.logo_text p {
+    font-size: 11px;
+    color: #a89478;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Navigation Bar Retrô (Menu Gótico Metálico) */
+#main_nav {
+    height: 44px;
+    background: linear-gradient(to bottom, #2b231a 0%, #15120d 50%, #0d0a08 100%);
+    border: 1px solid #4f3d28;
+    border-bottom: 2px solid #7c623f;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+    display: flex;
+    align-items: stretch;
+    border-radius: 3px 3px 0 0;
+}
+
+.nav_item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d6c6ad;
+    font-weight: bold;
+    font-size: 11px;
+    text-shadow: 1px 1px 2px #000;
+    border-right: 1px solid #332617;
+    border-left: 1px solid #1a140d;
+    position: relative;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.nav_item:hover, .nav_item.active {
+    background: linear-gradient(to bottom, #473826 0%, #291e13 50%, #17110a 100%);
+    color: #ffd073;
+    text-decoration: none;
+    box-shadow: inset 0 0 12px rgba(230, 140, 20, 0.35);
+}
+.nav_item:hover::after, .nav_item.active::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ffaa22;
+    box-shadow: 0 0 8px #ffaa22;
+}
+
+/* Layout 3 Colunas: Esquerda (210px) - Centro (530px) - Direita (260px) */
+#main_container {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+/* Coluna Esquerda */
+#sidebar_left {
+    width: 210px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Box Padrão com Moldura Clássica */
+.retro_box {
+    background: rgba(18, 15, 12, 0.95);
+    border: 1px solid #382c1f;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.box_header {
+    background: linear-gradient(to bottom, #2d2319 0%, #1b150e 100%);
+    border-bottom: 1px solid #4a3a29;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.box_header h3 {
+    font-size: 11px;
+    font-weight: bold;
+    color: #e5b972;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 1px #000;
+}
+.box_header .box_badge {
+    font-size: 9px;
+    background: #473523;
+    color: #ffcc66;
+    padding: 1px 5px;
+    border-radius: 2px;
+}
+.box_content {
+    padding: 10px;
+}
+
+/* Box de Login Clássico Ongame */
+#login_box {
+    background: #14110e;
+}
+.login_form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.login_row {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.login_row label {
+    font-size: 10px;
+    color: #a69883;
+    font-weight: bold;
+}
+.login_row input[type="text"],
+.login_row input[type="password"] {
+    background: #0d0a08;
+    border: 1px solid #3d2f20;
+    color: #f0e6d2;
+    padding: 5px 8px;
+    font-size: 11px;
+    border-radius: 2px;
+    outline: none;
+}
+.login_row input[type="text"]:focus,
+.login_row input[type="password"]:focus {
+    border-color: #c9882a;
+    box-shadow: 0 0 5px rgba(201, 136, 42, 0.4);
+}
+
+.login_actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px;
+}
+.btn_login {
+    flex: 1;
+    background: linear-gradient(to bottom, #994d11 0%, #662f06 100%);
+    border: 1px solid #d47b2b;
+    color: #fff;
+    font-weight: bold;
+    font-size: 11px;
+    padding: 6px 0;
+    cursor: pointer;
+    text-shadow: 1px 1px 2px #000;
+    border-radius: 2px;
+}
+.btn_login:hover {
+    background: linear-gradient(to bottom, #b85e17 0%, #7d3a08 100%);
+}
+
+.login_virtual_kb_toggle {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #2f251b;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    color: #8c7c68;
+}
+.login_virtual_kb_toggle span {
+    cursor: pointer;
+    color: #d19a45;
+    text-decoration: underline;
+}
+
+.login_links {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 10px;
+}
+.login_links a {
+    color: #bfa37e;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.login_links a:hover {
+    color: #ffb84d;
+}
+
+/* Teclado Virtual Ongame (Janela Flutuante) */
+#virtual_keyboard {
+    position: absolute;
+    top: 260px;
+    left: 230px;
+    width: 320px;
+    background: #1c1813;
+    border: 2px solid #54412c;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.9);
+    z-index: 999;
+    border-radius: 4px;
+    display: none;
+}
+.vk_header {
+    background: #2e2316;
+    padding: 6px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f0cb88;
+    font-weight: bold;
+    cursor: move;
+    border-bottom: 1px solid #4a3a29;
+}
+.vk_close {
+    cursor: pointer;
+    color: #e06040;
+    font-weight: bold;
+    padding: 0 4px;
+}
+.vk_keys {
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+}
+.vk_key {
+    background: #2a221a;
+    border: 1px solid #473827;
+    color: #d9cbb5;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 5px 0;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 2px;
+}
+.vk_key:hover {
+    background: #473827;
+    color: #ffaa33;
+}
+.vk_key.wide {
+    grid-column: span 2;
+}
+
+/* Quickmenu Lateral */
+.quick_menu_list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.quick_menu_list li a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: #16120e;
+    border-left: 2px solid transparent;
+    color: #c4b59f;
+    font-size: 11px;
+}
+.quick_menu_list li a:hover {
+    background: #231b14;
+    border-left-color: #ff9900;
+    color: #f7d28b;
+    text-decoration: none;
+}
+
+/* Status dos Servidores */
+.server_status_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.server_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    background: #15110d;
+    border: 1px solid #2d2319;
+    border-radius: 2px;
+}
+.server_name {
+    font-weight: bold;
+    color: #e0cfb8;
+}
+.server_state {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+}
+.status_dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.status_dot.online {
+    background: #2ecc71;
+    box-shadow: 0 0 6px #2ecc71;
+}
+.status_dot.busy {
+    background: #f39c12;
+    box-shadow: 0 0 6px #f39c12;
+}
+.status_dot.offline {
+    background: #e74c3c;
+    box-shadow: 0 0 6px #e74c3c;
+}
+
+/* Manutenção Periódica */
+.maintenance_box {
+    text-align: center;
+    padding: 8px;
+    background: #1a140e;
+    border: 1px dashed #473523;
+    font-size: 10px;
+    color: #a89a84;
+}
+.maintenance_box strong {
+    color: #e5a43b;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* Coluna Central (Main Content) */
+#main_content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Destaque / Banner Principal */
+.featured_banner {
+    position: relative;
+    height: 180px;
+    background: #15120e url('../images/main_frame.png') no-repeat center center;
+    background-size: cover;
+    border: 1px solid #4a3b2b;
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+}
+.featured_overlay {
+    width: 100%;
+    background: linear-gradient(to top, rgba(10,8,6,0.95) 0%, rgba(10,8,6,0.6) 60%, transparent 100%);
+    padding: 15px 20px;
+}
+.featured_tag {
+    background: #b54a0a;
+    color: #fff;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+.featured_title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #f7d592;
+    text-shadow: 1px 1px 3px #000;
+}
+.featured_desc {
+    font-size: 11px;
+    color: #c4b499;
+    margin-top: 3px;
+}
+
+/* Abas de Notícias & Eventos */
+.news_tabs {
+    display: flex;
+    background: #14100c;
+    border-bottom: 1px solid #3d2f21;
+}
+.news_tab {
+    padding: 8px 14px;
+    font-weight: bold;
+    font-size: 11px;
+    color: #a69883;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+.news_tab:hover {
+    color: #ffd073;
+}
+.news_tab.active {
+    color: #ff9f1c;
+    border-bottom: 2px solid #ff9f1c;
+    background: #1f1811;
+}
+
+.news_list {
+    display: flex;
+    flex-direction: column;
+}
+.news_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px dotted #2b2218;
+    transition: background 0.15s ease;
+}
+.news_item:hover {
+    background: #1c1610;
+}
+.news_item_title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.badge_news {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+.badge_news.noticia { background: #1e3d59; color: #a2c4e2; }
+.badge_news.evento { background: #542b10; color: #f7a059; }
+.badge_news.manut { background: #4a1919; color: #f28b82; }
+.badge_news.gmblog { background: #2f4327; color: #a8d59d; }
+
+.news_title_text {
+    font-weight: bold;
+    color: #dfceb5;
+}
+.news_item:hover .news_title_text {
+    color: #ffaa33;
+}
+.news_item_date {
+    font-size: 10px;
+    color: #7d6f5c;
+    white-space: nowrap;
+}
+
+/* Galeria de Fotos / Mídia */
+.media_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 10px;
+}
+.media_card {
+    background: #14100c;
+    border: 1px solid #33261a;
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+}
+.media_card img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.85);
+    transition: filter 0.2s ease, transform 0.2s ease;
+}
+.media_card:hover img {
+    filter: brightness(1.1);
+    transform: scale(1.03);
+}
+.media_caption {
+    padding: 4px 6px;
+    font-size: 10px;
+    color: #bfae95;
+    text-align: center;
+    background: #19140e;
+}
+
+/* Coluna Direita (Sidebar Right) */
+#sidebar_right {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Botão de Download Gigante Retrô */
+.btn_download_large {
+    display: block;
+    background: linear-gradient(to bottom, #d66a15 0%, #873904 100%);
+    border: 2px solid #ff9922;
+    border-radius: 3px;
+    padding: 12px 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(214, 106, 21, 0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+    text-decoration: none !important;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.btn_download_large:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(255, 153, 34, 0.6);
+    background: linear-gradient(to bottom, #e87b23 0%, #9e4306 100%);
+}
+.dl_main_text {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 3px #000;
+    letter-spacing: 0.5px;
+}
+.dl_sub_text {
+    display: block;
+    font-size: 10px;
+    color: #ffdfaa;
+    margin-top: 2px;
+}
+
+/* Ranking Top Players */
+.ranking_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+}
+.ranking_table th {
+    background: #241b12;
+    color: #dfb26b;
+    padding: 5px 4px;
+    text-align: left;
+    border-bottom: 1px solid #423220;
+    font-weight: bold;
+}
+.ranking_table td {
+    padding: 5px 4px;
+    border-bottom: 1px solid #1f1811;
+    color: #c9baa2;
+}
+.ranking_table tr:hover td {
+    background: #211911;
+    color: #ffd27d;
+}
+.rank_pos {
+    font-weight: bold;
+    text-align: center;
+    width: 22px;
+}
+.rank_pos.first { color: #f1c40f; }
+.rank_pos.second { color: #bdc3c7; }
+.rank_pos.third { color: #e67e22; }
+
+.rank_class {
+    display: inline-block;
+    padding: 1px 4px;
+    font-size: 9px;
+    font-weight: bold;
+    border-radius: 2px;
+}
+.class_tk { background: #7f1d1d; color: #fca5a5; }
+.class_fm { background: #1e3a8a; color: #93c5fd; }
+.class_bm { background: #14532d; color: #86efac; }
+.class_ht { background: #713f12; color: #fde047; }
+
+/* Cash Shop Promo Banner */
+.cash_shop_promo {
+    background: linear-gradient(135deg, #2b1708 0%, #150d06 100%);
+    border: 1px solid #6b4019;
+    padding: 10px;
+    border-radius: 2px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.cash_shop_promo h4 {
+    color: #ffb833;
+    font-size: 12px;
+    margin-bottom: 4px;
+    text-shadow: 1px 1px 2px #000;
+}
+.cash_shop_promo p {
+    font-size: 10px;
+    color: #dfcca8;
+    margin-bottom: 8px;
+}
+.btn_cash {
+    display: inline-block;
+    background: #c2781b;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 4px 12px;
+    border-radius: 2px;
+    text-decoration: none !important;
+}
+.btn_cash:hover {
+    background: #e08c22;
+}
+
+/* Rodapé Ongame Clássico */
+#footer {
+    margin-top: 20px;
+    background: #0d0a08;
+    border-top: 2px solid #332617;
+    padding: 18px 0 25px 0;
+}
+.footer_inner {
+    width: 1024px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+}
+.footer_left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.og_logo_badge {
+    font-size: 18px;
+    font-weight: 900;
+    font-family: Arial, sans-serif;
+    color: #ff6600;
+    border: 2px solid #ff6600;
+    padding: 2px 8px;
+    letter-spacing: -1px;
+}
+.footer_links {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+.footer_links a {
+    color: #bfa682;
+}
+.footer_copy {
+    font-size: 10px;
+    color: #6e614f;
+    line-height: 1.4;
+}
+.footer_rating {
+    border: 1px solid #4a3b2b;
+    padding: 4px 8px;
+    background: #14100c;
+    text-align: center;
+    font-size: 9px;
+    color: #ffaa33;
+    font-weight: bold;
+}
+
+/* Modal de Cadastro / Criar Conta */
+.modal_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+.modal_backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal_window {
+    width: 440px;
+    background: #17130f;
+    border: 2px solid #6b5338;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    overflow: hidden;
+}
+.modal_header {
+    background: linear-gradient(to bottom, #382a1b 0%, #1f170e 100%);
+    border-bottom: 1px solid #4a3a29;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #f7d28b;
+    font-weight: bold;
+    font-size: 13px;
+}
+.modal_close {
+    cursor: pointer;
+    color: #c25232;
+    font-size: 16px;
+    font-weight: bold;
+}
+.modal_body {
+    padding: 16px 20px;
+}
+.modal_row {
+    margin-bottom: 12px;
+}
+.modal_row label {
+    display: block;
+    font-size: 11px;
+    color: #d1c1a9;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+.modal_row input[type="text"],
+.modal_row input[type="password"],
+.modal_row input[type="email"] {
+    width: 100%;
+    background: #0d0a08;
+    border: 1px solid #3d2f20;
+    color: #f0e6d2;
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 2px;
+    outline: none;
+}
+.modal_row input:focus {
+    border-color: #d48a2c;
+    box-shadow: 0 0 6px rgba(212, 138, 44, 0.4);
+}
+.modal_msg {
+    padding: 8px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    font-size: 11px;
+    display: none;
+}
+.modal_msg.success {
+    background: #143818;
+    border: 1px solid #2e7d32;
+    color: #81c784;
+}
+.modal_msg.error {
+    background: #3e1616;
+    border: 1px solid #c62828;
+    color: #ef9a9a;
+}
+.btn_modal_submit {
+    width: 100%;
+    background: linear-gradient(to bottom, #d66a15 0%, #873904 100%);
+    border: 1px solid #ff9922;
+    color: #fff;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 9px 0;
+    cursor: pointer;
+    border-radius: 2px;
+    text-shadow: 1px 1px 2px #000;
+}
+.btn_modal_submit:hover {
+    background: linear-gradient(to bottom, #eb7a1e 0%, #9e4306 100%);
+}
+
+/* ==========================================================================
+   Página de Downloads & Requisitos de Sistema
+   ========================================================================== */
+.dl_container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.dl_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 10px;
+}
+
+.dl_card {
+    background: radial-gradient(circle at top, #201710 0%, #100b07 100%);
+    border: 1px solid #4a3826;
+    border-radius: 3px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.dl_card:hover {
+    border-color: #d48a2c;
+    box-shadow: 0 4px 14px rgba(212, 138, 44, 0.25);
+    transform: translateY(-2px);
+}
+
+.dl_card_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+.dl_card_title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffd891;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.dl_card_badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 2px;
+    background: #38281a;
+    border: 1px solid #6b4d2e;
+    color: #ffaa33;
+}
+.dl_card_badge.mega {
+    background: #4a1515;
+    border-color: #8c2525;
+    color: #ff8888;
+}
+.dl_card_badge.drive {
+    background: #153820;
+    border-color: #27693c;
+    color: #88ffaa;
+}
+.dl_card_badge.mediafire {
+    background: #15274a;
+    border-color: #25498c;
+    color: #88c2ff;
+}
+
+.dl_card_info {
+    font-size: 11px;
+    color: #b5a38a;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+.dl_card_meta {
+    display: flex;
+    gap: 12px;
+    font-size: 10px;
+    color: #857460;
+    margin-bottom: 12px;
+}
+.dl_card_meta span {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.dl_btn {
+    display: block;
+    text-align: center;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 11px;
+    border-radius: 2px;
+    text-decoration: none !important;
+    transition: all 0.15s ease;
+}
+.dl_btn_primary {
+    background: linear-gradient(to bottom, #d66a15 0%, #873904 100%);
+    border: 1px solid #ff9922;
+    color: #fff !important;
+    text-shadow: 1px 1px 2px #000;
+}
+.dl_btn_primary:hover {
+    background: linear-gradient(to bottom, #eb7a1e 0%, #9e4306 100%);
+    box-shadow: 0 0 8px rgba(255, 153, 34, 0.5);
+}
+.dl_btn_secondary {
+    background: linear-gradient(to bottom, #2b2219 0%, #17120d 100%);
+    border: 1px solid #4a3928;
+    color: #d1c1a9 !important;
+}
+.dl_btn_secondary:hover {
+    background: #3b2f23;
+    border-color: #d48a2c;
+    color: #ffd891 !important;
+}
+
+/* Tabela de Requisitos */
+.req_table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+    font-size: 11px;
+}
+.req_table th {
+    background: #1c140d;
+    color: #dfb26b;
+    padding: 8px 10px;
+    border: 1px solid #3d2c1d;
+    text-align: left;
+    font-weight: bold;
+}
+.req_table td {
+    padding: 7px 10px;
+    border: 1px solid #281d13;
+    color: #c4b59f;
+}
+.req_table tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+}
+.req_table tr:hover td {
+    background: #1e150d;
+    color: #fce1ab;
+}
+
+/* Guia de Instalação */
+.install_steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+.install_step_item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #130e09;
+    border: 1px solid #2d2014;
+    border-radius: 3px;
+    padding: 10px 12px;
+}
+.step_num {
+    background: #7a3c0e;
+    color: #ffdd99;
+    font-weight: bold;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    border: 1px solid #b85f1c;
+}
+.step_content strong {
+    color: #ffd27d;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 11px;
+}
+.step_content p {
+    color: #9e8d77;
+    font-size: 10px;
+    line-height: 1.4;
+}
+
+.notice_box_info {
+    background: #161b24;
+    border-left: 3px solid #3172c7;
+    padding: 10px 14px;
+    border-radius: 2px;
+    color: #9fb7db;
+    font-size: 11px;
+    line-height: 1.5;
+    margin-top: 10px;
+}
+

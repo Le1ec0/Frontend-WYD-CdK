@@ -1,39 +1,14 @@
 <?php
+declare(strict_types=1);
+
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'site-security.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'db.php';
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'config.php';
+
 site_bootstrap('account');
-/*
- * Painel minimo da conta: altera a senha diretamente na tabela accounts.
- *
- * A senha nunca e exibida, registrada ou armazenada em texto puro no banco.
- */
+
 error_reporting(0);
 ini_set('display_errors', '0');
-
-function openAccountDatabase(): ?PDO
-{
-    $secretPath = getenv('WYD_SITE_DB_SECRET');
-    if ($secretPath === false || trim($secretPath) === '') {
-        $secretPath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Server' . DIRECTORY_SEPARATOR . 'secrets' . DIRECTORY_SEPARATOR . 'site-db.json';
-    }
-    if (!is_file($secretPath)) {
-        return null;
-    }
-    if (!extension_loaded('pdo_mysql')) {
-        throw new RuntimeException('O driver PDO MySQL nao esta habilitado.');
-    }
-
-    $config = json_decode((string)file_get_contents($secretPath), true);
-    if (!is_array($config) || empty($config['host']) || empty($config['database']) || empty($config['username'])) {
-        throw new RuntimeException('A configuracao do banco de contas esta invalida.');
-    }
-
-    $dsn = 'mysql:host=' . $config['host'] . ';port=' . (int)($config['port'] ?? 3306) .
-        ';dbname=' . $config['database'] . ';charset=utf8mb4';
-    return new PDO($dsn, $config['username'], (string)($config['password'] ?? ''), [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_EMULATE_PREPARES => false,
-    ]);
-}
 
 function validAccountName(string $value): bool
 {
@@ -76,6 +51,8 @@ function changeDatabasePassword(string $accountName, string $oldPassword, string
 
 $message = '';
 $success = false;
+$prefillUser = trim((string)($_GET['user'] ?? ''));
+
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     site_rate_limit('account-post', 10, 60);
     $csrf = (string)($_POST['csrf'] ?? '');
@@ -96,54 +73,128 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $message = 'A nova senha deve ser diferente da senha atual.';
     } else {
         try {
-            changeDatabasePassword($accountName, $oldPassword, $newPassword, openAccountDatabase());
-            $message = 'Senha alterada com sucesso.';
+            changeDatabasePassword($accountName, $oldPassword, $newPassword, OpenAccountDatabase());
+            $message = 'Senha alterada com sucesso!';
             $success = true;
-        } catch (Throwable $exception) {
-            $message = $exception->getMessage();
+        } catch (Throwable $e) {
+            $message = $e->getMessage();
         }
     }
 }
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="windows-1252">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Alterar senha - WYD CDK</title>
-    <style>
-        body { margin: 0; background: #17120d; color: #f2e6d0; font: 16px Arial, sans-serif; }
-        main { width: min(420px, calc(100% - 32px)); margin: 56px auto; padding: 24px; background: #2a2017; border: 1px solid #80633d; border-radius: 8px; box-sizing: border-box; }
-        h1 { margin-top: 0; color: #e6bc72; font-size: 24px; }
-        label { display: block; margin: 14px 0 6px; }
-        input { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #80633d; border-radius: 4px; background: #fffaf0; color: #24180e; }
-        button { margin-top: 20px; width: 100%; padding: 11px; border: 0; border-radius: 4px; background: #b98032; color: #fff; font-weight: bold; cursor: pointer; }
-        .message { padding: 10px; margin-bottom: 16px; background: #3a2b1c; border-left: 4px solid #b98032; }
-        .success { border-left-color: #73b46b; }
-        small { color: #cbb99d; }
-        a { color: #e6bc72; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel da Conta - <?php echo htmlspecialchars($SERVER_NAME); ?></title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<main>
-    <h1>Alterar senha</h1>
-    <?php if ($message !== ''): ?>
-        <div class="message<?php echo $success ? ' success' : ''; ?>"><?php echo htmlspecialchars($message, ENT_QUOTES, 'Windows-1252'); ?></div>
-    <?php endif; ?>
-    <p><small>A senha deve ter de 6 a 10 caracteres alfanumericos.</small></p>
-    <form method="post" autocomplete="off">
-        <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(site_csrf_token('account_csrf'), ENT_QUOTES, 'Windows-1252'); ?>">
-        <label for="username">Usuario</label>
-        <input id="username" name="username" type="text" minlength="6" maxlength="12" required>
-        <label for="old_password">Senha atual</label>
-        <input id="old_password" name="old_password" type="password" minlength="6" maxlength="10" required>
-        <label for="new_password">Nova senha</label>
-        <input id="new_password" name="new_password" type="password" minlength="6" maxlength="10" required>
-        <label for="confirm_password">Confirmar nova senha</label>
-        <input id="confirm_password" name="confirm_password" type="password" minlength="6" maxlength="10" required>
-        <button type="submit">Alterar senha</button>
-    </form>
-    <p><a href="index.php">Voltar</a></p>
-</main>
+
+    <!-- Top Bar -->
+    <div id="top_util_bar">
+        <div class="ongame_network_links">
+            <span style="color:#e69d30; font-weight:bold; margin-right:10px;"><?php echo htmlspecialchars($SERVER_NAME); ?>:</span>
+            <a href="index.php">INÍCIO</a>
+            <a href="account.php">PAINEL DA CONTA</a>
+            <a href="guildmark.php">GUILDMARK</a>
+            <a href="ranking.php">RANKING</a>
+            <a href="download.php">DOWNLOADS</a>
+            <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank">DISCORD</a>
+        </div>
+        <div class="audio_player_ctrl">
+            <audio id="bgm_audio" src="audio/Login.mp3" loop preload="auto"></audio>
+            <button id="btn_toggle_bgm" class="audio_btn">🔈 Tocar BGM Clássica</button>
+        </div>
+    </div>
+
+    <div id="wrapper">
+        <header id="header">
+            <div class="logo_area">
+                <img src="images/logo.png" alt="<?php echo htmlspecialchars($SERVER_NAME); ?> Logo" class="logo_wyd">
+                <div class="logo_text">
+                    <h1><?php echo htmlspecialchars($SERVER_NAME); ?></h1>
+                    <p>Painel de Gerenciamento da Conta • Versão <?php echo htmlspecialchars($SERVER_VERSION); ?></p>
+                </div>
+            </div>
+
+            <nav id="main_nav">
+                <a href="index.php" class="nav_item">Início</a>
+                <a href="account.php" class="nav_item active">Painel da Conta</a>
+                <a href="guildmark.php" class="nav_item">Guildmark</a>
+                <a href="ranking.php" class="nav_item">Ranking Top</a>
+                <a href="download.php" class="nav_item">Downloads</a>
+                <a href="<?php echo htmlspecialchars($LINK_DISCORD); ?>" target="_blank" class="nav_item">Discord</a>
+            </nav>
+        </header>
+
+        <div id="main_container" style="justify-content: center;">
+            <div style="width: 580px; margin: 20px 0;">
+                <div class="retro_box">
+                    <div class="box_header">
+                        <h3>🔑 Alterar Senha da Conta</h3>
+                        <span class="box_badge">SEGURANÇA</span>
+                    </div>
+                    <div class="box_content" style="padding: 20px;">
+
+                        <?php if ($message): ?>
+                            <div class="modal_msg <?php echo $success ? 'success' : 'error'; ?>" style="display:block; margin-bottom: 15px;">
+                                <?php echo htmlspecialchars($message); ?>
+                            </div>
+                        <?php endif; ?>
+
+                        <form method="POST" action="account.php">
+                            <input type="hidden" name="csrf" value="<?php echo htmlspecialchars(site_csrf_token('account_csrf')); ?>">
+
+                            <div class="modal_row">
+                                <label for="username">Usuário da Conta:</label>
+                                <input type="text" name="username" id="username" value="<?php echo htmlspecialchars($prefillUser); ?>" maxlength="12" placeholder="Seu login" required>
+                            </div>
+
+                            <div class="modal_row">
+                                <label for="old_password">Senha Atual:</label>
+                                <input type="password" name="old_password" id="old_password" maxlength="10" placeholder="••••••••" required>
+                            </div>
+
+                            <div class="modal_row">
+                                <label for="new_password">Nova Senha (6 a 10 caracteres alfanuméricos):</label>
+                                <input type="password" name="new_password" id="new_password" maxlength="10" placeholder="••••••••" required>
+                            </div>
+
+                            <div class="modal_row">
+                                <label for="confirm_password">Confirmar Nova Senha:</label>
+                                <input type="password" name="confirm_password" id="confirm_password" maxlength="10" placeholder="••••••••" required>
+                            </div>
+
+                            <button type="submit" class="btn_action" style="margin-top: 15px; width: 100%;">ALTERAR SENHA AGORA</button>
+                        </form>
+
+                        <div style="margin-top: 20px; border-top: 1px dashed #3a2e20; padding-top: 12px; font-size: 10px; color: #8f806e; line-height: 1.5;">
+                            <strong>Aviso de Segurança:</strong><br>
+                            A equipe do <?php echo htmlspecialchars($SERVER_NAME); ?> nunca solicitará sua senha em jogo ou por canais privados. Mantenha sua senha segura e não utilize a mesma senha de outros servidores.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer id="footer">
+            <div class="footer_inner">
+                <div class="footer_left">
+                    <div class="og_logo_badge">CDK</div>
+                    <div>
+                        <div class="footer_copy">
+                            <?php echo htmlspecialchars($SERVER_NAME); ?> • Painel Seguro da Conta.<br>
+                            With Your Destiny é marca registrada da JoyImpact Co., Ltd.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>

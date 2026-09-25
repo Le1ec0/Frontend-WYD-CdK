@@ -66,3 +66,24 @@ WydCdk.Server.Core.exe --world UP --mariadb-account-config <mariadb-account-conf
 MariaDB e a autoridade da senha e do estado de personagem. Uma conta que ainda
 nao tenha blob para o `world_key` selecionado autentica, mas recebe uma selecao
 vazia ate criar o primeiro personagem.
+
+## Estado canonico de autotrade
+
+`003_autotrade_state.sql` cria `wyd_autotrade_state`, uma tabela separada para
+owner, slot, localizacao, titulo, itens, precos e taxa da oferta. Ela nao altera
+o blob legado de personagem. O host usa essa tabela automaticamente quando
+`--mariadb-account-config` esta ativo, salvo se `--autotrade-state` informar o
+arquivo local opt-in. O commit de compra MariaDB trava a linha dessa tabela e
+os blobs das duas contas na mesma transacao; a migracao e o banco MariaDB ao
+vivo ainda precisam ser validados em ambiente local/staging autorizado.
+
+## Equipamentos do cliente 7.69/7670
+
+`004_client_equipment_769.sql` cria `wyd_client_equipment_769`, uma extensao
+separada do blob legado para preservar os 18 slots do cliente 7.69. Cada item
+ocupa 8 bytes e o registro completo ocupa 144 bytes; os 16 primeiros continuam
+espelhados no estado legado e os indices 16 e 17 sao mantidos nesta tabela.
+O servidor C# usa `world_key` (`UP`/`PVP`), conta e slot do personagem como
+chave e ignora a extensao com fallback seguro quando a migracao ainda nao foi
+aplicada. Aplicar em staging antes de habilitar persistencia dos dois slots
+novos.

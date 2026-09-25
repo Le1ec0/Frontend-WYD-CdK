@@ -1,55 +1,127 @@
-﻿<HTML>
-<HEAD>
- <TITLE>Cavaleiros de Kersef</TITLE>
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
- <style type="text/css">
- 
- body{
- background:url(img/launcher.png);
- background-repeat:no-repeat;
- font-family:Arial, Helvetica, sans-serif;
- font-size:10px;
- text-decoration:none;
- }
- body a{
- color:#fff;
- }
- #noticia_laucher{
- left:20px;
- top:175px;
- position:absolute;
- }
- </style>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-</HEAD>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WYD CDK - Launcher News</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #000 url('img/launcher.png') no-repeat top left;
+            width: 598px;
+            height: 368px;
+            font-family: Arial, Tahoma, Helvetica, sans-serif;
+            font-size: 11px;
+            color: #d1c1a9;
+            overflow: hidden;
+            user-select: none;
+        }
+        a {
+            color: #ffdd99;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+        #noticia_laucher {
+            position: absolute;
+            left: 20px;
+            top: 170px;
+            width: 558px;
+            height: 180px;
+            overflow-y: auto;
+        }
+        .noticia_item {
+            display: flex;
+            align-items: center;
+            padding: 5px 6px;
+            border-bottom: 1px dotted #382d22;
+            gap: 8px;
+            font-size: 11px;
+        }
+        .noticia_item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .noticia_icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .noticia_icon img {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+        .noticia_tag {
+            font-weight: bold;
+            font-size: 10px;
+            padding: 1px 4px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .tag_news { color: #ffb833; }
+        .tag_event { color: #88ff88; }
+        .tag_maint { color: #ff8888; }
+        .tag_update { color: #88ccff; }
+        .titulo_noticia {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #e6dac8;
+        }
+        .titulo_noticia:hover {
+            color: #ffaa22;
+        }
+        .data_noticia {
+            font-size: 10px;
+            color: #8f7d69;
+            flex-shrink: 0;
+        }
+        /* Custom scrollbar */
+        #noticia_laucher::-webkit-scrollbar {
+            width: 5px;
+        }
+        #noticia_laucher::-webkit-scrollbar-thumb {
+            background: #4a3826;
+            border-radius: 3px;
+        }
+    </style>
+</head>
 <body scroll="no">
-<table width="598" border="0" cellspacing="0" cellpadding="0" height="368">
+    <div id="noticia_laucher">
+        <div class="noticia_item">
+            <span class="noticia_icon"><img src="img/iatualizacao.png" alt="Update"></span>
+            <span class="noticia_tag tag_update">[Update]</span>
+            <a class="titulo_noticia" href="download.php" target="_blank">A release 7.69 está disponível! Baixe o cliente 7670</a>
+            <span class="data_noticia">19/09/2026</span>
+        </div>
 
-<div id="noticia_laucher">         <a href="guildmark.php" target="_blank" style="text-decoration:none"> <!--Sempre colocar o codigo da noticia que esta no site-->
-        <div class="noticia">
-        <h2> <span><img src="img/inoticia.png" /></span>
-					<a class="titulo_noticia" href="http://wydcdkpvp.servegame.com/guildmark.php" target="_blank" style="text-decoration:none">Cadastre aqui sual guildmark</a> <!--Sempre colocar o link da noticia a descrição e o site-->
-					<a class="data_noticia"  target="_blank" style="text-decoration:none">10/04/2020</a>
- <h2><div class="Manuten">          <a href="guildmark.php" target="_blank" style="text-decoration:none"> <!--Sempre colocar o codigo da noticia que esta no site-->
-        <div class="noticia">
-        <h2> <span><img src="img/inoticia.png" /></span>
-					<a class="titulo_noticia" href="http://wydcdkpvp.servegame.com/guildmark.php" target="_blank" style="text-decoration:none">Cadastre aqui sual guildmark</a> <!--Sempre colocar o link da noticia a descrição e o site-->
-					<a class="data_noticia"  target="_blank" style="text-decoration:none">10/04/2020</a>
-         </div></a></h2>
-<h2><div class="Evento">         <a href="guildmark.php" target="_blank" style="text-decoration:none"> <!--Sempre colocar o codigo da noticia que esta no site-->
-        <div class="noticia">
-        <h2> <span><img src="img/inoticia.png" /></span>
-					<a class="titulo_noticia" href="http://wydcdkpvp.servegame.com/guildmark.php" target="_blank" style="text-decoration:none">Cadastre aqui sual guildmark</a> <!--Sempre colocar o link da noticia a descrição e o site-->
-					<a class="data_noticia"  target="_blank" style="text-decoration:none">10/04/2020</a>
-         </div></a></h2>
-		 
-</div>
-</table>
+        <div class="noticia_item">
+            <span class="noticia_icon"><img src="img/inoticia.png" alt="Guildmark"></span>
+            <span class="noticia_tag tag_news">[Guilds]</span>
+            <a class="titulo_noticia" href="guildmark.php" target="_blank">Cadastre aqui a sua Guildmark oficial (16x12 BMP)</a>
+            <span class="data_noticia">18/09/2026</span>
+        </div>
 
-</BODY>
-</HTML>       
-</div>
-</table>
+        <div class="noticia_item">
+            <span class="noticia_icon"><img src="img/ievento.png" alt="Evento"></span>
+            <span class="noticia_tag tag_event">[Evento]</span>
+            <a class="titulo_noticia" href="ranking.php" target="_blank">Guerra de Cidades e Noatun: confira o ranking dos castelos</a>
+            <span class="data_noticia">17/09/2026</span>
+        </div>
 
-</BODY>
-</HTML>
+        <div class="noticia_item">
+            <span class="noticia_icon"><img src="img/imanutencao.png" alt="Manutenção"></span>
+            <span class="noticia_tag tag_maint">[Manut]</span>
+            <a class="titulo_noticia" href="https://discord.gg/wydcdk" target="_blank">Manutenção semanal e notas de atualização no Discord</a>
+            <span class="data_noticia">16/09/2026</span>
+        </div>
+    </div>
+</body>
+</html>

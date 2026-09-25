@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WYD CDK - With Your Destiny (Release 7.69 / Cliente 7670)</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Barra Superior de Rede & Player de BGM -->
+    <div id="top_util_bar">
+        <div class="ongame_network_links">
+            <span style="color:#e69d30; font-weight:bold; margin-right:10px;">WYD CDK:</span>
+            <a href="#inicio">INÍCIO</a>
+            <a href="https://discord.gg/wydcdk" target="_blank">DISCORD OFICIAL</a>
+            <a href="#download">DOWNLOADS</a>
+            <a href="#ranking">RANKING</a>
+            <a href="#regras">REGRAS DO JOGO</a>
+        </div>
+        <div class="audio_player_ctrl">
+            <audio id="bgm_audio" src="audio/Login.mp3" loop preload="auto"></audio>
+            <button id="btn_toggle_bgm" class="audio_btn">🔈 Tocar BGM Clássica</button>
+        </div>
+    </div>
+
+    <!-- Wrapper Principal -->
+    <div id="wrapper">
+
+        <!-- Topo & Banner Clássico (2008) -->
+        <header id="header">
+            <div class="logo_area">
+                <img src="images/logo.png" alt="WYD CDK Logo" class="logo_wyd">
+                <div class="logo_text">
+                    <h1>WYD CDK</h1>
+                    <p>With Your Destiny - Release 7.69 / Cliente 7670 • UP / PvP Balanceado</p>
+                </div>
+            </div>
+
+            <!-- Navegação Superior Gótica -->
+            <nav id="main_nav">
+                <a href="#inicio" class="nav_item active">Início</a>
+                <a href="#cadastro" class="nav_item open_modal_cadastro">Criar Conta</a>
+                <a href="#download" class="nav_item">Download Game</a>
+                <a href="#noticias" class="nav_item">Notícias & Eventos</a>
+                <a href="#ranking" class="nav_item">Ranking Top</a>
+                <a href="#classes" class="nav_item">Guia de Classes</a>
+                <a href="https://discord.gg/wydcdk" target="_blank" class="nav_item">Discord / Suporte</a>
+                <a href="#doacoes" class="nav_item">Loja & Cash</a>
+            </nav>
+        </header>
+
+        <!-- Container do Conteúdo com 3 Colunas -->
+        <div id="main_container">
+
+            <!-- Coluna da Esquerda (Login, Teclado Virtual, Menus) -->
+            <aside id="sidebar_left">
+
+                <!-- Box de Login Ongame Clássico -->
+                <div class="retro_box" id="login_box">
+                    <div class="box_header">
+                        <h3>Acesso à Conta</h3>
+                        <span class="box_badge">CDK ID</span>
+                    </div>
+                    <div class="box_content">
+                        <form id="form_login_ongame" class="login_form">
+                            <div class="login_row">
+                                <label for="login_user">Usuário:</label>
+                                <input type="text" id="login_user" placeholder="Login" maxlength="12" required>
+                            </div>
+                            <div class="login_row">
+                                <label for="login_pass">Senha:</label>
+                                <input type="password" id="login_pass" placeholder="Senha" maxlength="10" required>
+                            </div>
+                            <div class="login_actions">
+                                <button type="submit" class="btn_login">ENTRAR</button>
+                                <button type="button" class="btn_login open_modal_cadastro" style="background:#3a2817; border-color:#634b30;">REGISTRAR</button>
+                            </div>
+
+                            <div class="login_virtual_kb_toggle">
+                                <span>Teclado Virtual Antifraude</span>
+                                <span id="open_virtual_kb">[Abrir Teclado]</span>
+                            </div>
+
+                            <div class="login_links">
+                                <a href="#!" onclick="alert('Consulte seu e-mail cadastrado para redefinir sua senha.');">» Esqueci minha senha</a>
+                                <a href="#!" class="open_modal_cadastro">» Criar conta no servidor</a>
+                                <a href="https://discord.gg/wydcdk" target="_blank">» Atendimento Discord</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Teclado Virtual Flutuante -->
+                <div id="virtual_keyboard">
+                    <div class="vk_header">
+                        <span>⌨ Teclado Virtual Seguro (Anti-Keylogger)</span>
+                        <span class="vk_close" id="close_virtual_kb">✕</span>
+                    </div>
+                    <div class="vk_keys" id="vk_keys_container">
+                        <!-- Gerado dinamicamente via JS -->
+                    </div>
+                </div>
+
+                <!-- Menu Rápido -->
+                <div class="retro_box" id="quick_menu_box">
+                    <div class="box_header">
+                        <h3>Menu Rápido</h3>
+                    </div>
+                    <div class="box_content" style="padding: 4px 0;">
+                        <ul class="quick_menu_list">
+                            <li><a href="#cadastro" class="open_modal_cadastro"><span>⚡</span> Ativar Conta Nova</a></li>
+                            <li><a href="https://discord.gg/wydcdk" target="_blank"><span>💬</span> Comunidade no Discord</a></li>
+                            <li><a href="#ranking"><span>🏆</span> Salão da Fama Kersef</a></li>
+                            <li><a href="#classes"><span>⚔️</span> Guia de Evolução</a></li>
+                            <li><a href="#download"><span>📥</span> Cliente 7670 & Patch 7.69</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Status dos Servidores CDK -->
+                <div class="retro_box">
+                    <div class="box_header">
+                        <h3>Servidores WYD CDK</h3>
+                        <span class="box_badge">ONLINE</span>
+                    </div>
+                    <div class="box_content">
+                        <div class="server_status_list">
+                            <div class="server_item">
+                                <span class="server_name">Canal 1 (Novatos / UP)</span>
+                                <span class="server_state">
+                                    <span class="status_dot online"></span> Normal
+                                </span>
+                            </div>
+                            <div class="server_item">
+                                <span class="server_name">Canal 2 (Guerra / Noatun)</span>
+                                <span class="server_state">
+                                    <span class="status_dot online"></span> Lotado
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manutenção Periódica -->
+                <div class="retro_box">
+                    <div class="box_header">
+                        <h3>Manutenção</h3>
+                    </div>
+                    <div class="box_content">
+                        <div class="maintenance_box">
+                            <strong>Terça-Feira</strong>
+                            Das 08h00 às 12h00 (Horário de Brasília)
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- Coluna Central (Destaques, Notícias, Mídia) -->
+            <main id="main_content">
+
+                <!-- Banner Principal Destaque -->
+                <section class="featured_banner" id="inicio">
+                    <div class="featured_overlay">
+                        <span class="featured_tag">Servidor Oficial 7.69 / 7670</span>
+                        <h2 class="featured_title">WYD CDK: A Experiência da Release 7.69!</h2>
+                        <p class="featured_desc">Taxas equilibradas (EXP Média / Hard), Guerra de Noatun aos domingos, Guerra de Torres, montarias míticas e PvP balanceado sem pay-to-win.</p>
+                    </div>
+                </section>
+
+                <!-- Seção de Notícias & Eventos -->
+                <section class="retro_box" id="noticias">
+                    <div class="news_tabs">
+                        <div class="news_tab active" data-cat="todas">Todas</div>
+                        <div class="news_tab" data-cat="noticia">Notícias</div>
+                        <div class="news_tab" data-cat="evento">Eventos</div>
+                        <div class="news_tab" data-cat="manut">Manutenções</div>
+                        <div class="news_tab" data-cat="gmblog">GM Blog</div>
+                    </div>
+
+                    <div class="news_list">
+                        <article class="news_item" data-cat="evento">
+                            <div class="news_item_title">
+                                <span class="badge_news evento">Evento</span>
+                                <span class="news_title_text">[Inauguração] Grande Guerra de Noatun com Bonificação de Cash!</span>
+                            </div>
+                            <span class="news_item_date">Domingo 20:00</span>
+                        </article>
+
+                        <article class="news_item" data-cat="noticia">
+                            <div class="news_item_title">
+                                <span class="badge_news noticia">Notícia</span>
+                                <span class="news_title_text">[Cliente] Lançamento do Cliente 7670 e Patch 7.69</span>
+                            </div>
+                            <span class="news_item_date">Recente</span>
+                        </article>
+
+                        <article class="news_item" data-cat="evento">
+                            <div class="news_item_title">
+                                <span class="badge_news evento">Evento</span>
+                                <span class="news_title_text">[Big Sale] Pacote Inicial para Guildas e Líderes</span>
+                            </div>
+                            <span class="news_item_date">Ativo</span>
+                        </article>
+
+                        <article class="news_item" data-cat="manut">
+                            <div class="news_item_title">
+                                <span class="badge_news manut">Manut</span>
+                                <span class="news_title_text">[Manutenção] Otimização das Zonas Elementais da Água e Kefra</span>
+                            </div>
+                            <span class="news_item_date">Finalizada</span>
+                        </article>
+
+                        <article class="news_item" data-cat="gmblog">
+                            <div class="news_item_title">
+                                <span class="badge_news gmblog">GM Blog</span>
+                                <span class="news_title_text">[GM Blog] Cronograma de Invasões e Balanceamento das Classes</span>
+                            </div>
+                            <span class="news_item_date">Destaque</span>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- Galeria de Imagens de Batalha -->
+                <section class="retro_box">
+                    <div class="box_header">
+                        <h3>Galeria de Kersef & Batalhas Épicas</h3>
+                    </div>
+                    <div class="media_grid">
+                        <div class="media_card">
+                            <img src="images/launcher_original.png" alt="Launcher Oficial WYD CDK">
+                            <div class="media_caption">Cliente oficial 7670</div>
+                        </div>
+                        <div class="media_card">
+                            <img src="images/background.jpg" alt="Campos de Armia">
+                            <div class="media_caption">Campos de Armia</div>
+                        </div>
+                        <div class="media_card">
+                            <img src="images/main_frame.png" alt="Castelo de Noatun">
+                            <div class="media_caption">Guerra de Noatun</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Guia de Classes Rápido -->
+                <section class="retro_box" id="classes">
+                    <div class="box_header">
+                        <h3>Guia de Classes Clássicas</h3>
+                    </div>
+                    <div class="box_content" style="display:grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#fca5a5;">⚔️ TransKnight (TK)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Mestres da espada e da fé divina. Defesa impenetrável e habilidades devastadoras corpo a corpo.</p>
+                        </div>
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#93c5fd;">🔮 Foema (FM)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Mestras da magia arcana e da cura divina. Destroem hordas inteiras e ressuscitam aliados.</p>
+                        </div>
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#86efac;">🐾 BeastMaster (BM)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Comandantes da natureza e das feras. Invocadores implacáveis e mestres da transmutação.</p>
+                        </div>
+                        <div style="background:#15110d; padding:8px; border:1px solid #33261a; border-radius:2px;">
+                            <strong style="color:#fde047;">🏹 Huntress (HT)</strong>
+                            <p style="font-size:10px; color:#a89984; margin-top:3px;">Ágeis caçadoras de elite. Especialistas no arco longo, lâminas duplas e armadilhas venenosas.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Coluna da Direita (Download, Ranking, Loja de Cash) -->
+            <aside id="sidebar_right">
+
+                <!-- Botão de Download Gigante -->
+                <div id="download">
+                    <a href="#download" onclick="alert('Iniciando download do Cliente WYD CDK 7670...');" class="btn_download_large">
+                        <span class="dl_main_text">DOWNLOAD DO JOGO</span>
+                        <span class="dl_sub_text">Cliente Completo WYD CDK 7670</span>
+                    </a>
+                </div>
+
+                <!-- Box de Ranking Top Players -->
+                <div class="retro_box" id="ranking">
+                    <div class="box_header">
+                        <h3>Top Ranking</h3>
+                        <select id="ranking_server_select" style="background:#1a140d; color:#e0c18d; border:1px solid #473624; font-size:9px; padding:1px 3px;">
+                            <option value="mizar">Geral</option>
+                            <option value="alper">PvP</option>
+                            <option value="sephira">Guildas</option>
+                        </select>
+                    </div>
+                    <div class="box_content" style="padding:0;">
+                        <table class="ranking_table">
+                            <thead>
+                                <tr>
+                                    <th class="rank_pos">#</th>
+                                    <th>Nick</th>
+                                    <th>Classe</th>
+                                    <th>Evolução</th>
+                                    <th>Guild</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ranking_tbody">
+                                <!-- Preenchido dinamicamente via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Loja de Doações / Cash -->
+                <div class="cash_shop_promo" id="doacoes">
+                    <h4>💎 Apoie o Servidor</h4>
+                    <p>Adquira pacotes de Cash automatizados com liberação imediata para apoiar os custos do servidor!</p>
+                    <a href="https://discord.gg/wydcdk" target="_blank" class="btn_cash">SISTEMA DE CASH</a>
+                </div>
+
+                <!-- Requisitos do Sistema -->
+                <div class="retro_box" id="regras">
+                    <div class="box_header">
+                        <h3>Requisitos do Jogo</h3>
+                    </div>
+                    <div class="box_content" style="font-size:10px; color:#b5a691; line-height:1.5;">
+                        <p><strong style="color:#dfb26b;">Mínimos:</strong></p>
+                        <p>CPU: Pentium III 800 MHz ou sup.</p>
+                        <p>RAM: 256 MB</p>
+                        <p>Vídeo: 32 MB (DirectX 8.1)</p>
+                        <p>Disco: 2 GB livres</p>
+                        <div style="border-top:1px dashed #36291b; margin:6px 0;"></div>
+                        <p><strong style="color:#dfb26b;">Recomendados:</strong></p>
+                        <p>CPU: Dual Core ou superior</p>
+                        <p>RAM: 1 GB ou superior</p>
+                        <p>Vídeo: 128 MB 3D DirectX 9.0c</p>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+    <!-- Rodapé Clássico Estilizado para o CDK -->
+    <footer id="footer">
+        <div class="footer_inner">
+            <div class="footer_left">
+                <div class="og_logo_badge">CDK</div>
+                <div>
+                    <div class="footer_links">
+                        <a href="#!">Termos de Uso</a> |
+                        <a href="#!">Regras do Servidor</a> |
+                        <a href="https://discord.gg/wydcdk" target="_blank">Suporte Discord</a> |
+                        <a href="#!">Segurança da Conta</a>
+                    </div>
+                    <div class="footer_copy">
+                        WYD CDK • Servidor Privado de With Your Destiny para fins de entretenimento.<br>
+                        With Your Destiny é marca registrada da JoyImpact Co., Ltd.
+                    </div>
+                </div>
+            </div>
+            <div class="footer_rating">
+                CLASSIFICAÇÃO INDICATIVA<br>
+                <span style="font-size:14px; color:#ff6600;">14 ANOS</span><br>
+                PvP & Estratégia
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Cadastro / Criar Conta -->
+    <div class="modal_backdrop" id="modal_cadastro">
+        <div class="modal_window">
+            <div class="modal_header">
+                <span>⚔️ Criar Conta - WYD CDK</span>
+                <span class="modal_close" id="close_modal_cadastro">✕</span>
+            </div>
+            <div class="modal_body">
+                <div id="modal_msg" class="modal_msg"></div>
+                <form id="form_cadastro_modal">
+                    <div class="modal_row">
+                        <label for="cad_user">Nome de Usuário (4 a 12 caracteres):</label>
+                        <input type="text" id="cad_user" maxlength="12" placeholder="Ex: Guerreiro99" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="cad_email">E-mail Principal:</label>
+                        <input type="email" id="cad_email" placeholder="seuemail@provedor.com" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="cad_pass">Senha do Jogo (mínimo 6 caracteres):</label>
+                        <input type="password" id="cad_pass" maxlength="12" placeholder="••••••••" required>
+                    </div>
+                    <div class="modal_row">
+                        <label for="cad_pass_conf">Confirmar Senha:</label>
+                        <input type="password" id="cad_pass_conf" maxlength="12" placeholder="••••••••" required>
+                    </div>
+                    <div class="modal_row" style="font-size:10px; color:#9c8c76;">
+                        <input type="checkbox" id="cad_termos" checked required>
+                        <label for="cad_termos" style="display:inline; font-weight:normal;">Li e concordo com as Regras do Servidor.</label>
+                    </div>
+                    <button type="submit" class="btn_modal_submit">CONCLUIR CADASTRO</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts do Site -->
+    <script src="js/main.js"></script>
+</body>
+</html>
