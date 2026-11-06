@@ -25,12 +25,34 @@ php -S 127.0.0.1:8080 -t "D:\Jogos\WYD CDK\Site"
 fallback. Never copy `Backup/` to a release or remote host. Do not use live
 credentials for local tests.
 
-## Current gate
+## Runtime behavior and validation
 
-PHP syntax passed for all 10 PHP files. Route/database-contract comparison,
-dependency review, and isolated-database flow tests remain. This documentation
-does not authorize IIS/FTP publication or changes to the live site. See
-[CONTEXTO_TECNICO.md](CONTEXTO_TECNICO.md) for the module's
-integration inventory and validation criteria, and the root
-[`AGENTS.md`](../AGENTS.md), [`BACKLOG.md`](../BACKLOG.md), and
-[`PROGRESSO.md`](../PROGRESSO.md) for project-level direction.
+Account creation, password changes, and guildmark login/save require the
+configured MariaDB database. They fail closed when the database configuration
+or connection is unavailable. Guildmark saves also require the selected guild
+to appear in the authenticated account's world state; an empty leader list does
+not grant access.
+
+Run the database-unavailable regressions with:
+
+```powershell
+php tests/database-unavailable-fail-closed.php
+```
+
+Validation for the current Site change: PHP syntax checks passed for all 11 PHP
+files, and the four database-unavailable/leader-policy regressions passed both
+locally and in the isolated VPS staging copy. The VPS uses PHP 8.5.10 with
+`pdo_mysql`; read-only schema checks confirmed the columns required by account
+registration, login, password change, and world-state guild lookup. The live
+IIS routes returned HTTP 200, and a synthetic nonexistent-account login reached
+MariaDB and received the normal invalid-credentials response. The IIS app pool
+has read-only access to the same runtime secret file used by the game server.
+No live database rows or schema were changed. The donate-shop migration remains
+separate and was not applied.
+
+The launcher client download links still need release artifacts and verified
+URLs before being advertised as a public client release. See
+[CONTEXTO_TECNICO.md](CONTEXTO_TECNICO.md) for the module's integration
+inventory and validation criteria, and the root [`AGENTS.md`](../AGENTS.md),
+[`BACKLOG.md`](../BACKLOG.md), and [`PROGRESSO.md`](../PROGRESSO.md) for
+project-level direction.

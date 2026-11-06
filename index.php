@@ -71,9 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         $Msg = "Conta [<strong>{$Login}</strong>] criada com sucesso! Bem-vindo ao {$SERVER_NAME}.";
                     }
                 } else {
-                    // Fallback para quando o banco não estiver acessível localmente
-                    $AccCreate = true;
-                    $Msg = "Conta [<strong>{$Login}</strong>] registrada com sucesso! (Modo de teste local)";
+                    $Status = true;
+                    $Msg = 'O banco de contas está temporariamente indisponível. Tente novamente mais tarde.<br>';
                 }
             } catch (Throwable $e) {
                 $Status = true;

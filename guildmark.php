@@ -123,14 +123,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                         $success = true;
                     }
                 } else {
-                    // Fallback modo local/admin se banco não estiver acessível
-                    session_regenerate_id(true);
-                    $_SESSION['guildmark_account'] = $login;
-                    $_SESSION['guildmark_world'] = $loginWorld;
-                    $accountName = $login;
-                    $world = $loginWorld;
-                    $message = 'Conectado em modo local/offline. Você pode atualizar ou testar guildmarks.';
-                    $success = true;
+                    $message = 'O banco de dados está temporariamente indisponível.';
                 }
             } catch (Throwable $e) {
                 $message = 'O banco de dados está temporariamente indisponível.';
@@ -149,17 +142,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $message = 'Guild ID inválido (deve ser um número entre 1 e 65535).';
         } else {
             try {
-                $database ??= OpenGuildDatabase();
-                $isLeader = true;
-                if ($database !== null && $accountName !== '') {
-                    $leaders = readGuildLeaders($database, $accountName, $selectedWorld);
-                    $leaderIds = array_map(static fn(array $leader): int => (int)$leader['id'], $leaders);
-                    if (!empty($leaderIds) && !in_array((int)$selectedGuild, $leaderIds, true)) {
-                        $isLeader = false;
-                    }
+                if ($accountName === '') {
+                    throw new RuntimeException('Faça login para atualizar uma marca de guilda.');
                 }
 
-                if (!$isLeader) {
+                $database ??= OpenGuildDatabase();
+                if ($database === null) {
+                    throw new RuntimeException('O banco de dados está temporariamente indisponível.');
+                }
+
+                $leaders = readGuildLeaders($database, $accountName, $selectedWorld);
+                if (!guild_mark_account_leads_guild($leaders, (int)$selectedGuild)) {
                     $message = 'Somente o líder da guilda pode alterar o brasão.';
                 } else {
                     $guildDirectory = __DIR__ . DIRECTORY_SEPARATOR . 'img' . DIRECTORY_SEPARATOR . 'guilds' . DIRECTORY_SEPARATOR . $selectedWorld;

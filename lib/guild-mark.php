@@ -32,6 +32,21 @@ function guild_mark_validate_bmp(string $path): bool
     return in_array($mime, ['image/bmp', 'image/x-ms-bmp'], true);
 }
 
+function guild_mark_account_leads_guild(array $leaders, int $guildId): bool
+{
+    if ($guildId < 1 || $guildId > 65535) {
+        return false;
+    }
+
+    foreach ($leaders as $leader) {
+        if (is_array($leader) && (int)($leader['id'] ?? 0) === $guildId) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 function guild_mark_convert_upload(array $upload, string $destination): void
 {
     if (($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
