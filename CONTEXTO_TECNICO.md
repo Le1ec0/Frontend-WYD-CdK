@@ -8,6 +8,11 @@ anterior foi preservada em `Backup\Site-live-before-7.54`. O IIS da VPS serve
 essa base; em 06/11 foram publicados os ajustes de falha fechada de cadastro e
 guildmark, mantendo cópias de rollback em `C:\WYDCDK\Deploy`.
 
+O acesso público confirmado é `https://www.wydcdk.com.br`; uma requisição GET
+com query única apareceu no log `W3SVC1` desta VPS pelo binding HTTPS. O
+certificado associado cobre `wydcdk.com.br` e `www.wydcdk.com.br`, com validade
+até 15/12/2026.
+
 O usuario definiu esta versao como o novo frontend e informa que ela cobre as
 funcoes do site live e acrescenta recursos. O trabalho deve partir desta source,
 preservar os contratos atuais e trazer as novas integracoes. Nao voltar a tratar
